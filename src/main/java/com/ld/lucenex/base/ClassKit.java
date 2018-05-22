@@ -15,6 +15,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ld.lucenex.field.FieldKey;
+
 /**
  * @ClassName: ClassKit
  * @Description: TODO
@@ -29,7 +31,9 @@ public class ClassKit {
 		for (int i = 0; i < fields.length; i++) {
 			Field field = fields[i];
 			field.setAccessible(true);
-			list.add(field);
+			if(field.isAnnotationPresent(FieldKey.class)) {
+				list.add(field);
+			}
 		}
 		return list;
 	}

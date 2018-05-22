@@ -12,12 +12,26 @@
 package com.ld.lucenex.base;
 
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.lucene.document.BinaryPoint;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.DoublePoint;
+import org.apache.lucene.document.FloatPoint;
+import org.apache.lucene.document.IntPoint;
+import org.apache.lucene.document.LongPoint;
+import org.apache.lucene.document.NumericDocValuesField;
+import org.apache.lucene.document.SortedDocValuesField;
+import org.apache.lucene.document.SortedNumericDocValuesField;
+import org.apache.lucene.document.SortedSetDocValuesField;
+import org.apache.lucene.document.StoredField;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.util.BytesRef;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ld.lucenex.field.FieldKey;
 
 /**
  * @ClassName: ToDocument
@@ -33,16 +47,123 @@ public class ToDocument {
 	 * @param object
 	 * @return
 	 * @return: Document
+	 * @throws IllegalAccessException 
 	 */
-	public Document getDocument(Object object) {
-		Object v;
+	public static Document getDocument(Object object) throws IllegalAccessException {
+		Object o = toObject(object);
+		if(o == null) {
+			return null;
+		}
+		List<Field> fields = ClassKit.getFields(o.getClass());
+		int size = fields.size();
+		Document document = new Document();
+		for (int i = 0; i < size; i++) {
+			Field field = fields.get(i);
+			add(document, field, o);
+		}
+		return document;
+	}
+	
+	public static Object toObject(Object object) {
+		Object v = null;
 		if(object instanceof Map) {
-			v=new ObjectMapper().convertValue(object, BaseConfig.getConstants().getDefaultClass());
+//			v=new ObjectMapper().convertValue(object, BaseConfig.getConstants().getDefaultClass());
 		}else {
 			v=object;
 		}
-		List<Field> fields = ClassKit.getFields(v.getClass());
-		return null;
+		return v;
+	}
+	
+	private static void add(Document doc,Field field,Object obj) throws IllegalAccessException {
+		String value;
+		Object object = field.get(obj);
+		if(object != null) {
+			value = object.toString();
+		}else {
+			return;
+		}
+		FieldKey fieldKey = field.getAnnotation(FieldKey.class);
+		String name = field.getName();
+
+
+		//字段存储
+		switch (fieldKey.type()) {
+		case IntPoint:
+			int parseInt = Integer.parseInt(value);
+			doc.add(new IntPoint(name,parseInt));
+			doc.add(new StoredField(name,parseInt));
+			break;
+		case LongPoint:
+			Long valueOf = Long.valueOf(value);
+			doc.add(new LongPoint(name, valueOf));
+			doc.add(new StoredField(name, valueOf));
+			break;
+		case DateField:
+			long date = ((Date) field.get(obj)).getTime();
+			doc.add(new LongPoint(name, date));
+			doc.add(new StoredField(name, date));
+			break;
+		case FloatPoint:
+			Float valueOf2 = Float.valueOf(value);
+			doc.add(new FloatPoint(name, valueOf2));
+			doc.add(new StoredField(name, valueOf2));
+			break;
+		case DoublePoint:
+			Double valueOf3 = Double.valueOf(value);
+			doc.add(new DoublePoint(name, valueOf3));
+			doc.add(new StoredField(name, valueOf3));
+			break;
+		case BinaryPoint:
+			byte[] bytes = value.getBytes();
+			doc.add(new BinaryPoint(name, bytes));
+			doc.add(new StoredField(name, bytes));
+			break;
+		case StringField:
+			doc.add(new StringField(name, value,org.apache.lucene.document. Field.Store.YES));
+			break;
+		case TextField:
+			doc.add(new TextField(name, value, org.apache.lucene.document.Field.Store.YES));
+			if(fieldKey.pinyin()) {
+				doc.add(new TextField(name+"_pin", pinyin(value), org.apache.lucene.document.Field.Store.YES));
+			}
+			break;
+		}
+
+		//排序存储
+		switch (fieldKey.sort()) {
+		case SortNull:
+			break;
+		case SortedDocValuesField:
+			doc.add(new SortedDocValuesField(name, new BytesRef(value)));
+			break;
+		case SortedSetDocValuesField:
+			doc.add(new SortedSetDocValuesField(name, new BytesRef(value)));
+			break;
+		case NumericDocValuesField:
+			doc.add(new NumericDocValuesField(name, Long.valueOf(value)));
+			break;
+		case SortedNumericDocValuesField:
+			doc.add(new SortedNumericDocValuesField(name, Long.valueOf(value)));
+			break;
+		}
+	}
+
+	/**
+	 * 中文转拼音操作 (支持挺好)
+	 * @param v
+	 * @return
+	 */
+	private static String pinyin(String v) {
+//		List<String> pinyin = Pinyin.pinyin(v);
+		StringBuilder sb = new StringBuilder();
+//		int size = pinyin.size();
+//		for (int i = 0; i < size; i++) {
+//			String val = pinyin.get(i);
+//			if(val != null) {
+//				sb.append(val).append(" ");
+//			}
+//		}
+		return sb.toString();
 	}
 
 }

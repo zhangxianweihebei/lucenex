@@ -21,7 +21,7 @@ import org.apache.lucene.search.IndexSearcher;
  * @author: Myzhang  
  * @date: 2018年5月22日 下午6:36:15
  */
-public class LucenexConfig {
+public class SourceConfig {
 	private String indexPath;
 	private boolean highlight;
 	private IndexWriter writer;
