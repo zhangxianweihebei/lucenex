@@ -11,9 +11,14 @@
  */
 package com.ld.lucenex.config;
 
+import java.io.IOException;
+
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
+
+import com.ld.lucenex.analyzer.Dic;
 
 /**
  * @ClassName: LucenexConfig
@@ -28,6 +33,7 @@ public class SourceConfig {
 	private IndexSearcher searcher;
 	private PerFieldAnalyzerWrapper analyzer;
 	private Class<?> defaultClass;
+	private Dic dic;
 	public String getIndexPath() {
 		return indexPath;
 	}
@@ -70,5 +76,26 @@ public class SourceConfig {
 	public void setDefaultClass(Class<?> defaultClass) {
 		this.defaultClass = defaultClass;
 	}
-	
+	/**
+	 * @return dic
+	 */
+	public Dic getDic() {
+		return dic;
+	}
+	/**
+	 * @param dic 要设置的 dic
+	 */
+	public void setDic(Dic dic) {
+		this.dic = dic;
+	}
+
+	public void restartReader() throws IOException {
+		try {
+			DirectoryReader reader = DirectoryReader.open(this.writer);
+			IndexSearcher indexSearcher = new IndexSearcher(reader);
+			setSearcher(indexSearcher);
+		} catch (IOException e) {
+			throw new IOException("Write conversion read error");
+		} 
+	}
 }

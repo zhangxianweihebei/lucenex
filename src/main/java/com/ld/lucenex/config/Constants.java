@@ -30,6 +30,20 @@ public final class Constants {
 	private String defaultDisk;
 	
 	/**
+	 * @fieldName: extDictPath
+	 * @fieldType: String
+	 * @Description: 公共启用词库目录
+	 */
+	private String extDictPath;
+	
+	/**
+	 * @fieldName: extStopwordPath
+	 * @fieldType: String
+	 * @Description: 公共停用词库目录
+	 */
+	private String extStopwordPath;
+	
+	/**
 	 * @param devMode 要设置的 devMode
 	 */
 	public void setDevMode(boolean devMode) {
@@ -80,5 +94,30 @@ public final class Constants {
 	 */
 	public String getDefaultDisk() {
 		return defaultDisk;
+	}
+	
+	/**
+	 * @param extDictPath 要设置的 extDictPath
+	 */
+	public void setExtDictPath(String extDictPath) {
+		this.extDictPath = extDictPath;
+	}
+	/**
+	 * @param extStopwordPath 要设置的 extStopwordPath
+	 */
+	public void setExtStopwordPath(String extStopwordPath) {
+		this.extStopwordPath = extStopwordPath;
+	}
+	/**
+	 * @return extDictPath
+	 */
+	public String getExtDictPath() {
+		return extDictPath;
+	}
+	/**
+	 * @return extStopwordPath
+	 */
+	public String getExtStopwordPath() {
+		return extStopwordPath;
 	}
 }
