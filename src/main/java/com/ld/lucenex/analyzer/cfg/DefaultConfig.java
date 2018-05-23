@@ -22,8 +22,8 @@ public class DefaultConfig implements Configuration{
 	/*
 	 * 分词器默认字典路径 
 	 */
-	private static final String PATH_DIC_MAIN = "com/lucenex/dic/main2012.dic";
-	private static final String PATH_DIC_QUANTIFIER = "com/lucenex/dic/quantifier.dic";
+	private static final String PATH_DIC_MAIN = "com/ld/lucenex/analyzer/main2012.dic";
+	private static final String PATH_DIC_QUANTIFIER = "com/ld/lucenex/analyzer/quantifier.dic";
 
 	//配置属性——扩展字典
 	private static final String EXT_DICT = "ext_dict";

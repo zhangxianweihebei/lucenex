@@ -74,6 +74,7 @@ public class BaseConfig implements InitConfig{
 				dic.init();
 				config.setDic(dic);
 			}
+			config.setAnalyzer(analyzer);
 			setWriter(config, indexDirectory.toPath());
 			config.restartReader();
 			ManySource.putDataSource(dataKey, config);
