@@ -45,6 +45,10 @@ public class BaseConfig implements InitConfig{
 		config.configConstant(constants);
 		config.configLuceneX(baseConfig);
 	}
+	
+	public static Constants baseConfig() {
+		return constants;
+	}
 
 	public void createSource(String indexPath,String dataKey,boolean highlight, PerFieldAnalyzerWrapper analyzer,Class<?> clas,Dic dic) {
 		try {
@@ -70,6 +74,14 @@ public class BaseConfig implements InitConfig{
 			if(clas == null && constants.getDefaultClass() == null) {
 				throw new NullPointerException("No default class");
 			}
+			if(clas == null) {
+				if(constants.getDefaultClass() == null) {
+					throw new NullPointerException("No default class");
+				}else {
+					clas = constants.getDefaultClass();
+				}
+			}
+			config.setDefaultClass(clas);
 			if(dic != null) {
 				dic.init();
 				config.setDic(dic);

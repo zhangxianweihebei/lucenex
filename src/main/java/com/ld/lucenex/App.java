@@ -17,8 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
-import com.ld.lucenex.agent.LdDuang;
-
 /**
  * @ClassName: App
  * @Description: TODO
@@ -78,9 +76,6 @@ public class App {
 		System.out.println(collect2);
 //		DemoService duang = LdDuang.duang(new DemoService(""));
 //		duang.add();
-		DemoService demoService = new DemoService("");
-		demoService.add();
-		System.out.println(demoService.config);
 	}
 	public static String x(List<String> l,int i,String k) {
 		if(i ==l.size()-1 || l.get(i).equals("<BREAK>")) {

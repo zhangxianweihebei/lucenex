@@ -2,14 +2,14 @@ package com.ld.lucenex.service;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopDocs;
-import com.ld.lucenex.base.ToDocument;
+import org.apache.lucene.search.spans.SpanNearQuery;
+import org.apache.lucene.search.spans.SpanWeight;
+import org.apache.lucene.search.spans.Spans;
+
 import com.ld.lucenex.core.Service;
 
 public class BasisService extends Service{
@@ -21,28 +21,24 @@ public class BasisService extends Service{
 		super(dataKey);
 	}
 
-	public void saveIndex(List<?> list) throws IOException {
-		List<Document> collect = list.stream().map(e->{
-			Document document = null;
-			try {
-				document = ToDocument.getDocument(e);
-			} catch (Exception e2) {
-				e2.printStackTrace();
-			}
-			return document;
-		}).collect(Collectors.toList());
-		config.getWriter().addDocuments(collect);
-		config.getWriter().commit();
+	public void addIndex(List<?> list) throws IOException {
+		addDocuments(toDocument(list));
 	};
 	
-	public void findList(Query query,int num) throws IOException{
+	public void findList(SpanNearQuery query,int num) throws IOException{
 		IndexSearcher searcher = config.getSearcher();
-		TopDocs topDocs = searcher.search(query, num);
-		System.out.println();
-		ScoreDoc[] scoreDocs = topDocs.scoreDocs;
-		for (ScoreDoc scoreDoc : scoreDocs) {
-			System.out.println(searcher.doc(scoreDoc.doc));
-		}
+		SpanWeight weight = query.createWeight(searcher, true, 0);
+		List<LeafReaderContext> leaves = searcher.getIndexReader().getContext().leaves();
+        for (LeafReaderContext leaf : leaves) {
+            Spans spans = weight.getSpans(leaf, SpanWeight.Postings.POSITIONS);
+            while (spans.nextDoc() != Spans.NO_MORE_DOCS) {
+                Document doc = leaf.reader().document(spans.docID());
+                while (spans.nextStartPosition() != Spans.NO_MORE_POSITIONS) {
+                    System.out.println("doc id = " + spans.docID() + ", doc IDX= " + doc.get("IDX") + ", start position = " + spans.startPosition() + ", end " +
+                            "position = " + spans.endPosition());
+                }
+            }
+        }
 	}
 
 }

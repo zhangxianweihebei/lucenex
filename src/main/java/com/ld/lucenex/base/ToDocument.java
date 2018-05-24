@@ -31,6 +31,7 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.util.BytesRef;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ld.lucenex.field.FieldKey;
 
 /**
@@ -49,25 +50,29 @@ public class ToDocument {
 	 * @return: Document
 	 * @throws IllegalAccessException 
 	 */
-	public static Document getDocument(Object object) throws IllegalAccessException {
-		Object o = toObject(object);
+	public static Document getDocument(Object object,Class<?> clas){
+		Object o = toObject(object,clas);
 		if(o == null) {
 			return null;
 		}
-		List<Field> fields = ClassKit.getFields(o.getClass());
+		List<Field> fields = ClassKit.getFields(clas);
 		int size = fields.size();
 		Document document = new Document();
 		for (int i = 0; i < size; i++) {
 			Field field = fields.get(i);
-			add(document, field, o);
+			try {
+				add(document, field, o);
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
 		}
 		return document;
 	}
 	
-	public static Object toObject(Object object) {
+	public static Object toObject(Object object, Class<?> clas) {
 		Object v = null;
 		if(object instanceof Map) {
-//			v=new ObjectMapper().convertValue(object, BaseConfig.getConstants().getDefaultClass());
+			v=new ObjectMapper().convertValue(object, clas);
 		}else {
 			v=object;
 		}
