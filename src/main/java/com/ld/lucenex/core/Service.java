@@ -18,12 +18,18 @@ import java.util.stream.Collectors;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.TopFieldDocs;
 
 import com.ld.lucenex.base.BaseConfig;
 import com.ld.lucenex.base.ToDocument;
 import com.ld.lucenex.config.Constants;
 import com.ld.lucenex.config.SourceConfig;
+import com.ld.lucenex.thread.LdThreadPool;
 
 /**
  * @ClassName: Service
@@ -36,8 +42,7 @@ public class Service {
 	public SourceConfig config;
 	public IndexWriter writer;
 	public IndexSearcher searcher;
-	private String dataKey="";
-	private static final Constants constants = BaseConfig.baseConfig();
+	public static final Constants constants = BaseConfig.baseConfig();
 
 	/**
 	 * @Title:Service
@@ -51,7 +56,6 @@ public class Service {
 	 * @Description:TODO
 	 */
 	public Service(String dataKey) {
-		this.dataKey = dataKey;
 		ManySource.putContextHolder(dataKey);
 		config = ManySource.getDataSource();
 		if(config != null) {
@@ -60,31 +64,127 @@ public class Service {
 		}
 	}
 
+	/**
+	 * @Title: addDocuments
+	 * @Description: TODO
+	 * @param docs
+	 * @return
+	 * @throws IOException
+	 * @return: long
+	 */
 	public long addDocuments(Iterable<? extends Iterable<? extends IndexableField>> docs) throws IOException {
-		if(writer == null) {
-			throw new NullPointerException("No relevant source "+dataKey);
-		}
 		long addDocuments = writer.addDocuments(docs);
-		if(constants.isDevMode()) {//开发模式
-			writer.commit();
-		}
-		config.restartReader();//实时
+		Refresh();
 		return addDocuments;
 	}
+	/**
+	 * @Title: addDocument
+	 * @Description: TODO
+	 * @param doc
+	 * @return
+	 * @throws IOException
+	 * @return: long
+	 */
 	public long addDocument(Iterable<? extends IndexableField> doc) throws IOException {
-		if(writer == null) {
-			throw new NullPointerException("No relevant source "+dataKey);
-		}
 		long addDocument = writer.addDocument(doc);
-		if(constants.isDevMode()) {//开发模式
-			writer.commit();
-		}
-		config.restartReader();//实时
+		Refresh();
 		return addDocument;
 	}
+
+	/**
+	 * @Title: count
+	 * @Description: 计算与给定查询匹配的文档数量
+	 * @param query
+	 * @return
+	 * @throws IOException
+	 * @return: int
+	 */
+	public int count(Query query) throws IOException {
+		return searcher.count(query);
+	}
+
+	/**
+	 * @Title: getDocument
+	 * @Description: 根据文档ID 获取一个文档
+	 * @param docID
+	 * @return
+	 * @throws IOException
+	 * @return: Document
+	 */
+	public Document getDocument(int docID) throws IOException {
+		return searcher.doc(docID);
+	}
+
+	public TopDocs search(Query query, int n) throws IOException{
+		return searcher.search(query, n);
+	}
+	public TopFieldDocs search(Query query, int n, Sort sort){
+		return search(query, n, sort);
+	}
+
+	public long deleteAll() throws IOException {
+		long l = writer.deleteAll();
+		Refresh();
+		return l;
+	}
+
+	public long deleteDocuments(Query... queries) throws IOException {
+		long l = writer.deleteDocuments(queries);
+		Refresh();
+		return l;
+	}
+
+	public long deleteDocuments(Term... terms) throws IOException {
+		long l = writer.deleteDocuments(terms);
+		Refresh();
+		return l;
+	}
+
+	public void deleteUnusedFiles() throws IOException {
+		writer.deleteUnusedFiles();
+		Refresh();
+	}
 	
+	public long updateIndex(List<Document> list,Term term) throws IOException{
+		long l = writer.updateDocuments(term, list);
+		Refresh();
+		return l;
+	}
 	public List<Document> toDocument(List<?> list){
 		return list.stream().map(e->ToDocument.getDocument(e,config.getDefaultClass())).collect(Collectors.toList());
 	}
-
+	
+	/**
+	 * @Title: Refresh
+	 * @Description: 异步实时刷新 源
+	 * @return: void
+	 */
+	public void Refresh() {
+		LdThreadPool.build().get().execute(()->{
+			try {
+				if(constants.isDevMode()) {//开发模式
+					writer.commit();
+				}
+				config.setWriter(writer);
+				config.restartReader();
+				searcher = config.getSearcher();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
+	}
+	
+	/**
+	 * @Title: goBack
+	 * @Description: 回退数据 前提处于非开发模式
+	 * @return: void
+	 */
+	public void goBack() {
+		try {
+			writer.rollback();
+			Refresh();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+	}
 }

@@ -58,6 +58,7 @@ public class ToDocument {
 		List<Field> fields = ClassKit.getFields(clas);
 		int size = fields.size();
 		Document document = new Document();
+		document.add(new IntPoint("lucenex_total",0));
 		for (int i = 0; i < size; i++) {
 			Field field = fields.get(i);
 			try {

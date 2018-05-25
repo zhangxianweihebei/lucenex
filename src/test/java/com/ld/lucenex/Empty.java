@@ -29,6 +29,16 @@ public class Empty {
 	public void setText(String text) {
 		this.text = text;
 	}
+	/* (non Javadoc)
+	 * @Title: toString
+	 * @Description: TODO
+	 * @return
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Empty [id=" + id + ", name=" + name + ", text=" + text + "]";
+	}
 	
 
 }

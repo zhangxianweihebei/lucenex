@@ -98,4 +98,19 @@ public class SourceConfig {
 			throw new IOException("Write conversion read error");
 		} 
 	}
+	/* (non Javadoc)
+	 * @Title: toString
+	 * @Description: TODO
+	 * @return
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "SourceConfig [indexPath=" + indexPath + ", highlight=" + highlight + ", writer=" + writer
+				+ ", searcher=" + searcher + ", analyzer=" + analyzer + ", defaultClass=" + defaultClass + ", dic="
+				+ dic + "]";
+	}
+	
+	
+	
 }
