@@ -1,2 +1,18 @@
 # lucenex
-Full text retrieval framework based on Lucene
+基于 lucene 7.x 开发的搜索框架
+
+# 特点
+### 无XML开箱即用
+### 单源多源支持
+### 无需手动资源创建于释放
+### 自带高性能近实时索引
+### 可扩展的Service设计
+### 灵活使用IndexWriter、IndexSearcher 无需担心同步和内存泄漏问题
+### 内置丰富的底层接口 如 添加、更新、删除、查询
+### 支持自动对象转换
+### 可直接添加Java对象与Map集合 无需手动 转Lucene Document
+### 生产模式支持数据回退
+### 自带Ik analyzer 分词器、多源使用不同分词器与词库
+### 可自定义分词器
+### 注解式 字段定义
+### 天然支持异步提交和更新
