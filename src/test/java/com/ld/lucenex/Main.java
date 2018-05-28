@@ -9,16 +9,15 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.TermQuery;
 
 import com.ld.lucenex.base.Page;
-import com.ld.lucenex.config.SourceConfig;
 import com.ld.lucenex.core.LuceneX;
 import com.ld.lucenex.service.BasisService;
 
 public class Main {
-	public static void main(String[] args) throws IOException {
-		SourceConfig sourceConfig = new SourceConfig();
+	public static void main(String[] args) throws IOException, InterruptedException {
 		LuceneX.start(DemoConfig.class);
 		new BasisService("test").deleteAll();
 		save();
+		Thread.sleep(5000);//等待异步
 		Page<Document> page = new BasisService("test")
 				.searchList(new TermQuery(new Term("text", "北京")), Page.newPage(1, 5));
 		System.out.println(page);
