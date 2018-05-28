@@ -69,7 +69,7 @@ public class BaseConfig implements InitConfig{
 				throw new Exception("Not a valid directory");
 			}
 			if(analyzer == null) {
-				analyzer = new PerFieldAnalyzerWrapper(new LDAnalyzer(dataKey));
+				analyzer = new PerFieldAnalyzerWrapper(new LDAnalyzer());
 			}
 			if(clas == null && constants.getDefaultClass() == null) {
 				throw new NullPointerException("No default class");

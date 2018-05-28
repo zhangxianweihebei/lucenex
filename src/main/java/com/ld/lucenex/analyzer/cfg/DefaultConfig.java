@@ -105,7 +105,7 @@ public class DefaultConfig implements Configuration{
 	}
 
 	private Set<String> build(String key) {
-		Dic dic = ManySource.getDataSource(DicDataSource.getDatabaseType()).getDic();
+		Dic dic = ManySource.getDataSource(ManySource.getContextHolder()).getDic();
 		if(dic != null) {
 			return dic.getThesaurus().get(key);
 		}else {

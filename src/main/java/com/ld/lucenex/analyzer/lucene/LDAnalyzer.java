@@ -9,8 +9,6 @@ import java.io.StringReader;
 
 import org.apache.lucene.analysis.Analyzer;
 
-import com.ld.lucenex.analyzer.cfg.DicDataSource;
-
 public class LDAnalyzer extends Analyzer{
 
 	private boolean useSmart;
@@ -26,18 +24,17 @@ public class LDAnalyzer extends Analyzer{
 	/**
 	 * 默认细粒度切分算法
 	 */
-	public LDAnalyzer(String dicKey){
-		this(false,dicKey);
+	public LDAnalyzer(){
+		this(false);
 	}
 
 	/**
 	 * 
 	 * @param useSmart true（智能分词）false（细粒度切分算法）
 	 */
-	public LDAnalyzer(boolean useSmart,String dicKey){
+	public LDAnalyzer(boolean useSmart){
 		super();
 		this.useSmart = useSmart;
-		DicDataSource.setDatabaseType(dicKey);
 	}
 
 	@Override

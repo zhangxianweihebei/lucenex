@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.ld.lucenex.analyzer.cfg.Configuration;
-import com.ld.lucenex.analyzer.cfg.DicDataSource;
+import com.ld.lucenex.core.ManySource;
 
 
 /**
@@ -63,11 +63,11 @@ public class Dictionary {
 		if(_StopWordDict == null) {
 			_StopWordDict = new HashMap<>();
 		}
-		if(_MainDict.get(DicDataSource.getDatabaseType()) == null) {
-			_MainDict.put(DicDataSource.getDatabaseType(), new DictSegment((char)0));
+		if(_MainDict.get(ManySource.getContextHolder()) == null) {
+			_MainDict.put(ManySource.getContextHolder(), new DictSegment((char)0));
 		}
-		if(_StopWordDict.get(DicDataSource.getDatabaseType()) == null) {
-			_StopWordDict.put(DicDataSource.getDatabaseType(), new DictSegment((char)0));
+		if(_StopWordDict.get(ManySource.getContextHolder()) == null) {
+			_StopWordDict.put(ManySource.getContextHolder(), new DictSegment((char)0));
 		}
 		if(_QuantifierDict == null) {
 			_QuantifierDict = new DictSegment((char)0);
@@ -83,9 +83,9 @@ public class Dictionary {
 	 * @return Dictionary
 	 */
 	public static Dictionary initial(Configuration cfg){
-		if(singleton == null || singleton._MainDict.get(DicDataSource.getDatabaseType()) == null){
+		if(singleton == null || singleton._MainDict.get(ManySource.getContextHolder()) == null){
 			synchronized(Dictionary.class){
-				if(singleton == null || singleton._MainDict.get(DicDataSource.getDatabaseType()) == null){
+				if(singleton == null || singleton._MainDict.get(ManySource.getContextHolder()) == null){
 					singleton = new Dictionary(cfg);
 					return singleton;
 				}
@@ -114,7 +114,7 @@ public class Dictionary {
 			for(String word : words){
 				if (word != null) {
 					//批量加载词条到主内存词典中
-					singleton._MainDict.get(DicDataSource.getDatabaseType()).fillSegment(word.trim().toLowerCase().toCharArray());
+					singleton._MainDict.get(ManySource.getContextHolder()).fillSegment(word.trim().toLowerCase().toCharArray());
 				}
 			}
 		}
@@ -129,7 +129,7 @@ public class Dictionary {
 			for(String word : words){
 				if (word != null) {
 					//批量屏蔽词条
-					singleton._MainDict.get(DicDataSource.getDatabaseType()).disableSegment(word.trim().toLowerCase().toCharArray());
+					singleton._MainDict.get(ManySource.getContextHolder()).disableSegment(word.trim().toLowerCase().toCharArray());
 				}
 			}
 		}
@@ -141,7 +141,7 @@ public class Dictionary {
 	 * @return Hit 匹配结果描述
 	 */
 	public Hit matchInMainDict(char[] charArray){
-		return singleton._MainDict.get(DicDataSource.getDatabaseType()).match(charArray);
+		return singleton._MainDict.get(ManySource.getContextHolder()).match(charArray);
 	}
 	
 	/**
@@ -152,7 +152,7 @@ public class Dictionary {
 	 * @return Hit 匹配结果描述
 	 */
 	public Hit matchInMainDict(char[] charArray , int begin, int length){
-		return singleton._MainDict.get(DicDataSource.getDatabaseType()).match(charArray, begin, length);
+		return singleton._MainDict.get(ManySource.getContextHolder()).match(charArray, begin, length);
 	}
 	
 	/**
@@ -188,7 +188,7 @@ public class Dictionary {
 	 * @return boolean
 	 */
 	public boolean isStopWord(char[] charArray , int begin, int length){			
-		return singleton._StopWordDict.get(DicDataSource.getDatabaseType()).match(charArray, begin, length).isMatch();
+		return singleton._StopWordDict.get(ManySource.getContextHolder()).match(charArray, begin, length).isMatch();
 	}	
 	
 	/**
@@ -196,7 +196,7 @@ public class Dictionary {
 	 */
 	private void loadMainDict(){
 		//建立一个主词典实例
-		DictSegment segment = _MainDict.get(DicDataSource.getDatabaseType());
+		DictSegment segment = _MainDict.get(ManySource.getContextHolder());
 		//读取主词典文件
         InputStream is = this.getClass().getClassLoader().getResourceAsStream(cfg.getMainDictionary());
         if(is == null){
@@ -239,7 +239,7 @@ public class Dictionary {
 		Set<String> extDictFiles  = cfg.getExtDictionarys();
 		if(extDictFiles != null){
 			for (String theWord : extDictFiles) {
-				_MainDict.get(DicDataSource.getDatabaseType()).fillSegment(theWord.trim().toLowerCase().toCharArray());
+				_MainDict.get(ManySource.getContextHolder()).fillSegment(theWord.trim().toLowerCase().toCharArray());
 			}
 		}		
 	}
@@ -252,7 +252,7 @@ public class Dictionary {
 		Set<String> extStopWordDictFiles  = cfg.getExtStopWordDictionarys();
 		if(extStopWordDictFiles != null){
 			for (String theWord : extStopWordDictFiles) {
-				_StopWordDict.get(DicDataSource.getDatabaseType()).fillSegment(theWord.trim().toLowerCase().toCharArray());
+				_StopWordDict.get(ManySource.getContextHolder()).fillSegment(theWord.trim().toLowerCase().toCharArray());
 			}
 		}		
 	}
