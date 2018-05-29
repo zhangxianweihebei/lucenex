@@ -1,10 +1,16 @@
 package com.ld.lucenex.core;
 
+import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.ld.lucenex.config.SourceConfig;
+import com.ld.lucenex.thread.LoggerFactory;
 
-public class ManySource {
+public class ManySource{
+	
+	private static Logger logger = LoggerFactory.getLogger(ManySource.class);
 	
 	private static volatile ConcurrentHashMap<String, SourceConfig> dataSource = new ConcurrentHashMap<>();
 	private static final ThreadLocal<String> contextHolder = new ThreadLocal<>();
@@ -34,6 +40,38 @@ public class ManySource {
 	}
 	public static void clearContextHolder() {
 		contextHolder.remove();
+	}
+	
+	/**
+	 * @Title: submit
+	 * @Description: 提交所有源
+	 * @return: void
+	 */
+	public static void submit() {
+		dataSource.forEach((k,v)->{
+			logger.info("提交<"+k+">数据源");
+			try {
+				v.getWriter().commit();
+				v.restartReader();
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, "提交<"+k+">数据源",e);
+			}
+		});
+	}
+	
+	/**
+	 * @Title: close
+	 * @Description: 关闭所有源
+	 * @return: void
+	 */
+	public static void close() {
+		submit();
+		dataSource.forEach((k,v)->{
+			try {
+				v.getWriter().close();
+			} catch (IOException e) {
+			}
+		});
 	}
 	
 }
