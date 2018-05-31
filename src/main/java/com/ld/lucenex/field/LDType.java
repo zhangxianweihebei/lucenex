@@ -11,6 +11,7 @@ public enum LDType {
 	
 	TextField,
 	StringField,
+	String_TextField,
 	DateField,
 	IntPoint,
 	LongPoint,

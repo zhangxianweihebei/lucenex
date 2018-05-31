@@ -71,6 +71,9 @@ public class ToDocument {
 	}
 	
 	public static Object toObject(Object object, Class<?> clas) {
+		if(object == null) {
+			return null;
+		}
 		Object v = null;
 		if(object instanceof Map) {
 			v=new ObjectMapper().convertValue(object, clas);
@@ -126,6 +129,13 @@ public class ToDocument {
 			break;
 		case StringField:
 			doc.add(new StringField(name, value,org.apache.lucene.document. Field.Store.YES));
+			break;
+		case String_TextField:
+			doc.add(new StringField(name+"_str", value,org.apache.lucene.document. Field.Store.YES));
+			doc.add(new TextField(name+"_txt", value, org.apache.lucene.document.Field.Store.YES));
+			if(fieldKey.pinyin()) {
+				doc.add(new TextField(name+"_pin", pinyin(value), org.apache.lucene.document.Field.Store.YES));
+			}
 			break;
 		case TextField:
 			doc.add(new TextField(name, value, org.apache.lucene.document.Field.Store.YES));

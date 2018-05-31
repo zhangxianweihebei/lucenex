@@ -30,7 +30,8 @@ public class BasisService extends Service{
 	 * @return: void
 	 */
 	public void addIndex(List<?> list) throws IOException {
-		addDocuments(toDocument(list));
+		List<Document> document = toDocument(list);
+		addDocuments(document);
 	};
 	
 	/**
