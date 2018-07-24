@@ -37,15 +37,15 @@ import com.ld.lucenex.core.ManySource;
  * @date: 2018年5月22日 下午12:30:22
  */
 public class BaseConfig implements InitConfig{
-	
+
 	private static final Constants constants = new Constants();
 	private static final BaseConfig baseConfig = new BaseConfig();
-	
+
 	public static void configLuceneX(LuceneXConfig config) {
 		config.configConstant(constants);
 		config.configLuceneX(baseConfig);
 	}
-	
+
 	public static Constants baseConfig() {
 		return constants;
 	}
@@ -94,7 +94,7 @@ public class BaseConfig implements InitConfig{
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void setWriter(SourceConfig config,Path path) throws IOException {
 		FSDirectory directory = NIOFSDirectory.open(path, NoLockFactory.INSTANCE);
 		IndexWriter writer = new IndexWriter(directory, new IndexWriterConfig(config.getAnalyzer()));
@@ -133,7 +133,7 @@ public class BaseConfig implements InitConfig{
 	 */
 	@Override
 	public void add(String dataKey, Class<?> clas) {
-createSource(null, dataKey, false, null, clas, null);		
+		createSource(null, dataKey, false, null, clas, null);		
 	}
 
 	/* (non Javadoc)
@@ -146,7 +146,7 @@ createSource(null, dataKey, false, null, clas, null);
 	 */
 	@Override
 	public void add(String dataKey, Class<?> clas, Dic dic) {
-createSource(null, dataKey, false, null, clas, dic);		
+		createSource(null, dataKey, false, null, clas, dic);		
 	}
 
 	/* (non Javadoc)
@@ -160,7 +160,7 @@ createSource(null, dataKey, false, null, clas, dic);
 	public void add(String indexPath, String dataKey) {
 		// TODO 自动生成的方法存根
 		createSource(indexPath, dataKey, false, null, null, null);
-		
+
 	}
 
 	/* (non Javadoc)
@@ -175,7 +175,7 @@ createSource(null, dataKey, false, null, clas, dic);
 	public void add(String indexPath, String dataKey, Dic dic) {
 		// TODO 自动生成的方法存根
 		createSource(indexPath, dataKey, false, null, null, dic);
-		
+
 	}
 
 	/* (non Javadoc)
@@ -190,7 +190,7 @@ createSource(null, dataKey, false, null, clas, dic);
 	public void add(String indexPath, String dataKey, Class<?> clas) {
 		// TODO 自动生成的方法存根
 		createSource(indexPath, dataKey, false, null, clas, null);
-		
+
 	}
 
 	/* (non Javadoc)
@@ -220,7 +220,7 @@ createSource(null, dataKey, false, null, clas, dic);
 	public void add(String indexPath, String dataKey, boolean highlight) {
 		// TODO 自动生成的方法存根
 		createSource(indexPath, dataKey, highlight, null, null, null);
-		
+
 	}
 
 	/* (non Javadoc)
@@ -251,7 +251,7 @@ createSource(null, dataKey, false, null, clas, dic);
 	public void add(String indexPath, String dataKey, boolean highlight, Class<?> clas) {
 		// TODO 自动生成的方法存根
 		createSource(indexPath, dataKey, highlight, null, clas, null);
-		
+
 	}
 
 	/* (non Javadoc)
@@ -283,7 +283,7 @@ createSource(null, dataKey, false, null, clas, dic);
 	public void add(String indexPath, String dataKey, boolean highlight, PerFieldAnalyzerWrapper analyzer) {
 		// TODO 自动生成的方法存根
 		createSource(indexPath, dataKey, highlight, analyzer, null, null);
-		
+
 	}
 
 	/* (non Javadoc)
@@ -317,7 +317,7 @@ createSource(null, dataKey, false, null, clas, dic);
 			Class<?> clas) {
 		// TODO 自动生成的方法存根
 		createSource(indexPath, dataKey, highlight, analyzer, clas, null);
-		
+
 	}
 
 	/* (non Javadoc)
@@ -336,27 +336,27 @@ createSource(null, dataKey, false, null, clas, dic);
 			Class<?> clas, Dic dic) {
 		// TODO 自动生成的方法存根
 		createSource(indexPath, dataKey, highlight, analyzer, clas, dic);
-		
+
 	}
 
 }
 interface InitConfig {
-	
+
 	void add(String dataKey);
 	void add(String dataKey,Dic dic);
 	void add(String dataKey,Class<?> clas);
 	void add(String dataKey,Class<?> clas,Dic dic);
-	
+
 	void add(String indexPath,String dataKey);
 	void add(String indexPath,String dataKey,Dic dic);
 	void add(String indexPath,String dataKey,Class<?> clas);
 	void add(String indexPath,String dataKey,Class<?> clas,Dic dic);
-	
+
 	void add(String indexPath,String dataKey,boolean highlight);
 	void add(String indexPath,String dataKey,boolean highlight,Dic dic);
 	void add(String indexPath,String dataKey,boolean highlight,Class<?> clas);
 	void add(String indexPath,String dataKey,boolean highlight,Class<?> clas,Dic dic);
-	
+
 	void add(String indexPath,String dataKey,boolean highlight, PerFieldAnalyzerWrapper analyzer);
 	void add(String indexPath,String dataKey,boolean highlight, PerFieldAnalyzerWrapper analyzer,Dic dic);
 	void add(String indexPath,String dataKey,boolean highlight, PerFieldAnalyzerWrapper analyzer,Class<?> clas);
