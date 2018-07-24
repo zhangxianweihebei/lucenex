@@ -2,11 +2,11 @@ package com.ld.lucenex.core;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ld.lucenex.config.SourceConfig;
-import com.ld.lucenex.thread.LoggerFactory;
 
 public class ManySource{
 	
@@ -54,7 +54,7 @@ public class ManySource{
 				v.getWriter().commit();
 				v.restartReader();
 			} catch (Exception e) {
-				logger.log(Level.SEVERE, "提交<"+k+">数据源",e);
+				logger.error("提交<"+k+">数据源",e);
 			}
 		});
 	}

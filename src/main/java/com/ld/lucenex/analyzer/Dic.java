@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import com.ld.lucenex.thread.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class Dic {
@@ -77,24 +77,24 @@ public class Dic {
 			List<File> extDicFileList = new ArrayList<>();
 			getExtend(extDicFileList, extDictPath);
 			if(extDicFileList.isEmpty()) {
-				log.warning(extDictPath+" is null .dic file");
+				log.warn(extDictPath+" is null .dic file");
 			}else {
 				thesaurus.put("ext_dict", exe(extDicFileList));
 			}
 		}else {
-			log.warning("dic init extDic is null");
+			log.warn("dic init extDic is null");
 		}
 		if(extStopwordPath != null) {
 			log.info("dic init extStopwordPath path "+extStopwordPath);
 			List<File> extStopwordPathFileList = new ArrayList<>();
 			getExtend(extStopwordPathFileList, extStopwordPath);
 			if(extStopwordPathFileList.isEmpty()) {
-				log.warning(extStopwordPath+" is null .dic file");
+				log.warn(extStopwordPath+" is null .dic file");
 			}else {
 				thesaurus.put("ext_stopwords", exe(extStopwordPathFileList));
 			}
 		}else {
-			log.warning("dic init extStopwordPath is null");
+			log.warn("dic init extStopwordPath is null");
 		}
 	}
 
@@ -105,7 +105,7 @@ public class Dic {
 			try {
 				readLines = Files.readAllLines(e.toPath());
 			} catch (IOException e1) {
-				log.log(Level.SEVERE, "dic exe read error "+e.getAbsolutePath(), e1);
+				log.error("dic exe read error "+e.getAbsolutePath(), e1);
 			}
 			if(readLines != null) {
 				int size = readLines.size();

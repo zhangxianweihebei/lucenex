@@ -24,12 +24,13 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopFieldDocs;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ld.lucenex.base.BaseConfig;
 import com.ld.lucenex.base.ToDocument;
 import com.ld.lucenex.config.Constants;
 import com.ld.lucenex.config.SourceConfig;
-import com.ld.lucenex.thread.LdThreadPool;
 
 /**
  * @ClassName: Service
@@ -43,6 +44,8 @@ public class Service {
 	public IndexWriter writer;
 	public IndexSearcher searcher;
 	public static final Constants constants = BaseConfig.baseConfig();
+	
+	private Logger logger = LoggerFactory.getLogger(Service.class);
 
 	/**
 	 * @Title:Service
@@ -144,7 +147,7 @@ public class Service {
 		writer.deleteUnusedFiles();
 		Refresh();
 	}
-	
+
 	public long updateIndex(List<Document> list,Term term) throws IOException{
 		long l = writer.updateDocuments(term, list);
 		Refresh();
@@ -153,27 +156,38 @@ public class Service {
 	public List<Document> toDocument(List<?> list){
 		return list.stream().map(e->ToDocument.getDocument(e,config.getDefaultClass())).collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * @Title: Refresh
 	 * @Description: 异步实时刷新 源
 	 * @return: void
 	 */
 	public void Refresh() {
-		LdThreadPool.build().get().execute(()->{
+		if(constants.isAsynchronous()) {
+			new Thread(()-> {
+				try {
+					if(constants.isDevMode()) {//开发模式
+						writer.commit();
+					}
+					config.setWriter(writer);
+					config.restartReader();
+				} catch (IOException e) {
+					logger.error("实时索引同步error", e);
+				}
+			}).start();
+		}else {
 			try {
 				if(constants.isDevMode()) {//开发模式
 					writer.commit();
 				}
 				config.setWriter(writer);
 				config.restartReader();
-				searcher = config.getSearcher();
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error("实时索引同步error", e);
 			}
-		});
+		}
 	}
-	
+
 	/**
 	 * @Title: goBack
 	 * @Description: 回退数据 前提处于非开发模式
@@ -182,9 +196,10 @@ public class Service {
 	public void goBack() {
 		try {
 			writer.rollback();
-			Refresh();
-		} catch (IOException e1) {
-			e1.printStackTrace();
+			config.setWriter(writer);
+			config.restartReader();
+		} catch (IOException e) {
+			logger.error("回退索引error", e);
 		}
 	}
 }

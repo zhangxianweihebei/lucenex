@@ -19,7 +19,7 @@ public class FieldSort{
 	
 	public Sort sort() {
 		Sort sort = new Sort();
-		for(int i=0;i<this.fields.length;i++) {
+		for(int i=0,length = fields.length;i<length;i++) {
 			sort.setSort(new SortField(fields[i], types[i], reverses[i]));
 		}
 		return sort;

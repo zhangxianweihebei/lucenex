@@ -20,50 +20,52 @@ import com.ld.lucenex.base.Const;
  * @date: 2018年5月22日 下午6:20:11
  */
 public final class Constants {
-	
+
 	private boolean devMode = Const.DEFAULT_DEV_MODE;
-	
+
 	private Class<?> defaultClass;
-	
+
 	private boolean highlight = Const.DEFAULT_HIGHLIGHT;
-	
+
+	private boolean isAsynchronous = Const.DEFAULT_ASYNCHRONOUS;
+
 	private String defaultDisk;
-	
+
 	/**
 	 * @fieldName: extDictPath
 	 * @fieldType: String
 	 * @Description: 公共启用词库目录
 	 */
 	private String extDictPath;
-	
+
 	/**
 	 * @fieldName: extStopwordPath
 	 * @fieldType: String
 	 * @Description: 公共停用词库目录
 	 */
 	private String extStopwordPath;
-	
+
 	/**
 	 * @param devMode 要设置的 devMode
 	 */
 	public void setDevMode(boolean devMode) {
 		this.devMode = devMode;
 	}
-	
+
 	/**
 	 * @return devMode
 	 */
 	public boolean isDevMode() {
 		return devMode;
 	}
-	
+
 	/**
 	 * @param defaultClass 要设置的 defaultClass
 	 */
 	public void setDefaultClass(Class<?> defaultClass) {
 		this.defaultClass = defaultClass;
 	}
-	
+
 	/**
 	 * @return defaultClass
 	 */
@@ -95,7 +97,7 @@ public final class Constants {
 	public String getDefaultDisk() {
 		return defaultDisk;
 	}
-	
+
 	/**
 	 * @param extDictPath 要设置的 extDictPath
 	 */
@@ -119,5 +121,19 @@ public final class Constants {
 	 */
 	public String getExtStopwordPath() {
 		return extStopwordPath;
+	}
+
+	/**
+	 * @return isAsynchronous
+	 */
+	public boolean isAsynchronous() {
+		return isAsynchronous;
+	}
+	/**
+	 * 设置异步 同步数据范围《添加，删除，修改》
+	 * @param isAsynchronous 要设置的 isAsynchronous
+	 */
+	public void setAsynchronous(boolean isAsynchronous) {
+		this.isAsynchronous = isAsynchronous;
 	}
 }

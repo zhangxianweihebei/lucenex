@@ -30,6 +30,7 @@ import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.util.BytesRef;
+import org.nlpcn.commons.lang.pinyin.Pinyin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ld.lucenex.field.FieldKey;
@@ -170,15 +171,11 @@ public class ToDocument {
 	 * @return
 	 */
 	private static String pinyin(String v) {
-//		List<String> pinyin = Pinyin.pinyin(v);
+		List<String> pinyin = Pinyin.pinyin(v);
 		StringBuilder sb = new StringBuilder();
-//		int size = pinyin.size();
-//		for (int i = 0; i < size; i++) {
-//			String val = pinyin.get(i);
-//			if(val != null) {
-//				sb.append(val).append(" ");
-//			}
-//		}
+		for (int i = 0,size = pinyin.size(); i < size; i++) {
+			sb.append(pinyin.get(i)).append(" ");
+		}
 		return sb.toString();
 	}
 

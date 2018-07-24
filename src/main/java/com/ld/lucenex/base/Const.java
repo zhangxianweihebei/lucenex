@@ -27,5 +27,7 @@ public class Const {
 	public final static boolean DEFAULT_DEV_MODE=true;
 	
 	public final static boolean DEFAULT_HIGHLIGHT=true;
+	
+	public final static boolean DEFAULT_ASYNCHRONOUS=false;
 
 }

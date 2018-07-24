@@ -5,23 +5,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.TermQuery;
 
-import com.ld.lucenex.base.Page;
 import com.ld.lucenex.core.LuceneX;
 import com.ld.lucenex.service.BasisService;
+import com.ld.lucenex.service.impl.SimpleService;
 
 public class Main {
 	public static void main(String[] args) throws IOException, InterruptedException {
 		LuceneX.start(DemoConfig.class);
 		new BasisService("test").deleteAll();
 		save();
-		Thread.sleep(5000);//等待异步
-		Page<Document> page = new BasisService("test")
-				.searchList(new TermQuery(new Term("text", "北京")), Page.newPage(1, 5));
-		System.out.println(page);
-		page.getList().forEach(e->System.out.println(e));
+		List<Document> list = new SimpleService("test").TermQuery("text", "北京", 100);
+//		Page<Document> page = new BasisService("test")
+//				.searchList(new TermQuery(new Term("text", "北京")), Page.newPage(1, 5));
+//		System.out.println(page);
+//		page.getList().forEach(e->System.out.println(e));
+//	
+//		//删除一个
+//		new BasisService("test").deleteDocuments(IntPoint.newExactQuery("id", 3));
+//		Page<Document> page2 = new BasisService("test")
+//				.searchList(new TermQuery(new Term("text", "北京")), Page.newPage(1, 5));
+//		System.out.println(page2);
+//		page2.getList().forEach(e->System.out.println(e));
+		for (Document document : list) {
+			System.out.println(document);
+		}
 	}
 	public static void save() throws IOException {
 		List<Empty> list = new ArrayList<>();
