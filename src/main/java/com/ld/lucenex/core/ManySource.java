@@ -26,7 +26,7 @@ public class ManySource{
 		dataSource.put(k, v);
 	}
 	public static SourceConfig getDataSource(String k) {
-		return dataSource.get(k);
+		return k == null ? null :(dataSource == null ? null : dataSource.get(k));
 	}
 	public static SourceConfig getDataSource() {
 		return dataSource.get(getContextHolder());
