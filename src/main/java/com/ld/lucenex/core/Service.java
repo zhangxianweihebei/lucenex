@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexableField;
@@ -24,6 +25,12 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopFieldDocs;
+import org.apache.lucene.search.highlight.Fragmenter;
+import org.apache.lucene.search.highlight.Highlighter;
+import org.apache.lucene.search.highlight.QueryScorer;
+import org.apache.lucene.search.highlight.SimpleFragmenter;
+import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
+import org.apache.lucene.search.highlight.SimpleSpanFragmenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,8 +50,10 @@ public class Service {
 	public SourceConfig config;
 	public IndexWriter writer;
 	public IndexSearcher searcher;
+	public Highlighter highlighter;
+	public PerFieldAnalyzerWrapper analyzer;
 	public static final Constants constants = BaseConfig.baseConfig();
-	
+
 	private Logger logger = LoggerFactory.getLogger(Service.class);
 
 	/**
@@ -64,6 +73,7 @@ public class Service {
 		if(config != null) {
 			searcher = config.getSearcher();
 			writer = config.getWriter();
+			analyzer = config.getAnalyzer();
 		}
 	}
 
@@ -119,9 +129,11 @@ public class Service {
 	}
 
 	public TopDocs search(Query query, int n) throws IOException{
+		highlighter = isHighlighter(query);
 		return searcher.search(query, n);
 	}
 	public TopFieldDocs search(Query query, int n, Sort sort){
+		highlighter = isHighlighter(query);
 		return search(query, n, sort);
 	}
 
@@ -155,6 +167,17 @@ public class Service {
 	}
 	public List<Document> toDocument(List<?> list){
 		return list.stream().map(e->ToDocument.getDocument(e,config.getDefaultClass())).collect(Collectors.toList());
+	}
+
+
+	public Highlighter isHighlighter(Query query) {
+		Highlighter highlighter = null;
+		if(config.isHighlight()) {
+			String[] htmlFormatter = constants.getHtmlFormatter();
+			highlighter=new Highlighter(new SimpleHTMLFormatter(htmlFormatter[0],htmlFormatter[1]), new QueryScorer(query));
+			highlighter.setTextFragmenter(new SimpleFragmenter(constants.getHighlightNum()));
+		}
+		return highlighter;
 	}
 
 	/**

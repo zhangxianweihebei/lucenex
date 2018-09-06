@@ -21,15 +21,20 @@ import com.ld.lucenex.base.Const;
  */
 public final class Constants {
 
-	private boolean devMode = Const.DEFAULT_DEV_MODE;
+	private boolean devMode = Const.DEFAULT_DEV_MODE;//开发&上线
 
-	private Class<?> defaultClass;
+	private Class<?> defaultClass;//默认Class
 
-	private boolean highlight = Const.DEFAULT_HIGHLIGHT;
 
-	private boolean isAsynchronous = Const.DEFAULT_ASYNCHRONOUS;
+	private boolean isAsynchronous = Const.DEFAULT_ASYNCHRONOUS;//同步异步
 
-	private String defaultDisk;
+	private String defaultDisk;//默认磁盘
+	
+	
+	private boolean highlight = Const.DEFAULT_HIGHLIGHT;//是否高亮
+	private String[] htmlFormatter = Const.DEFAULT_HTMLFORMATTER;//高亮标签
+	private int HighlightNum = Const.DEFAULT_HighlightNum;//高亮截取数量
+	
 
 	/**
 	 * @fieldName: extDictPath
@@ -50,6 +55,31 @@ public final class Constants {
 	 */
 	public void setDevMode(boolean devMode) {
 		this.devMode = devMode;
+	}
+	
+	/**
+	 * @param highlightNum 要设置的 highlightNum
+	 */
+	public void setHighlightNum(int highlightNum) {
+		HighlightNum = highlightNum;
+	}
+	/**
+	 * @return highlightNum
+	 */
+	public int getHighlightNum() {
+		return HighlightNum;
+	}
+	/**
+	 * @param htmlFormatter 要设置的 htmlFormatter
+	 */
+	public void setHtmlFormatter(String prefix,String suffix) {
+		this.htmlFormatter = new String[] {prefix,suffix};
+	}
+	/**
+	 * @return htmlFormatter
+	 */
+	public String[] getHtmlFormatter() {
+		return htmlFormatter;
 	}
 
 	/**

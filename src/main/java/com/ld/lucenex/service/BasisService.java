@@ -14,7 +14,7 @@ import com.ld.lucenex.base.Page;
 import com.ld.lucenex.core.Service;
 
 public class BasisService extends Service{
-
+	
 	public BasisService() {
 		// TODO 自动生成的构造函数存根
 	}
@@ -33,7 +33,7 @@ public class BasisService extends Service{
 		List<Document> document = toDocument(list);
 		addDocuments(document);
 	};
-	
+
 	/**
 	 * @Title: searchList
 	 * @Description: 简单query 带长度 n
@@ -52,9 +52,10 @@ public class BasisService extends Service{
 			}
 			return list;
 		}
+		highlighter = isHighlighter(query);
 		return null;
 	}
-	
+
 	/**
 	 * @Title: searchList
 	 * @Description: 简单分页查询 
@@ -79,9 +80,10 @@ public class BasisService extends Service{
 			page.setList(list);
 			page.setTotalRow(totalHits);
 		}
+		highlighter = isHighlighter(query);
 		return page;
 	}
-	
+
 	/**
 	 * @Title: searchTotal
 	 * @Description: 查询所有文档 必须使用 addIndex 添加

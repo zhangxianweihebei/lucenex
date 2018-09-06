@@ -81,6 +81,7 @@ public class BaseConfig implements InitConfig{
 					clas = constants.getDefaultClass();
 				}
 			}
+			config.setHighlight(highlight);
 			config.setDefaultClass(clas);
 			if(dic != null) {
 				dic.init();
