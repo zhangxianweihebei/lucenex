@@ -13,7 +13,9 @@ package com.ld.lucenex.core;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
@@ -51,6 +53,8 @@ public class Service {
 	public Highlighter highlighter;
 	public PerFieldAnalyzerWrapper analyzer;
 	public static final Constants constants = BaseConfig.baseConfig();
+	
+	public static ScheduledExecutorService pool = Executors.newScheduledThreadPool(2);
 
 	private Logger logger = LoggerFactory.getLogger(Service.class);
 
@@ -59,7 +63,7 @@ public class Service {
 	 * @Description:TODO
 	 */
 	public Service() {
-		// TODO 自动生成的构造函数存根
+		
 	}
 	/**
 	 * @Title:Service
@@ -164,7 +168,8 @@ public class Service {
 		return l;
 	}
 	public List<Document> toDocument(List<?> list){
-		return list.stream().map(e->ToDocument.getDocument(e,config.getDefaultClass())).collect(Collectors.toList());
+		return ToDocument.getDocuments(list, config.getDefaultClass());
+//		return list.stream().map(e->ToDocument.getDocument(e,config.getDefaultClass())).collect(Collectors.toList());
 	}
 
 
@@ -185,7 +190,7 @@ public class Service {
 	 */
 	public void Refresh() {
 		if(constants.isAsynchronous()) {
-			new Thread(()-> {
+			pool.schedule(()-> {
 				try {
 					if(constants.isDevMode()) {//开发模式
 						writer.commit();
@@ -195,7 +200,7 @@ public class Service {
 				} catch (IOException e) {
 					logger.error("实时索引同步error", e);
 				}
-			}).start();
+			}, constants.getDelayedSyn(), TimeUnit.NANOSECONDS);
 		}else {
 			try {
 				if(constants.isDevMode()) {//开发模式

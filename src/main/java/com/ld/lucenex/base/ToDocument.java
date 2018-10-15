@@ -12,6 +12,7 @@
 package com.ld.lucenex.base;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -56,19 +57,32 @@ public class ToDocument {
 		if(o == null) {
 			return null;
 		}
-		List<Field> fields = ClassKit.getFields(clas);
-		int size = fields.size();
+		Field[] fields = clas.getDeclaredFields();
 		Document document = new Document();
 		document.add(new IntPoint("lucenex_total",0));
-		for (int i = 0; i < size; i++) {
-			Field field = fields.get(i);
-			try {
-				add(document, field, o);
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
+		for (int i = 0; i < fields.length; i++) {
+			Field field = fields[i];
+			field.setAccessible(true);
+			if(field.isAnnotationPresent(FieldKey.class)) {
+				try {
+					add(document, field, o);
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
 			}
+			
 		}
 		return document;
+	}
+	
+	public static <T> List<Document> getDocuments(List<T> object,Class<?> clas){
+		List<Document> dataList = new ArrayList<>(object.size());
+		for (int i = 0,size = object.size(); i < size; i++) {
+			dataList.add(getDocument(object.get(i), clas));
+		}
+		object.clear();
+		object = null;
+		return dataList;
 	}
 	
 	public static Object toObject(Object object, Class<?> clas) {

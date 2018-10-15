@@ -35,7 +35,20 @@ public final class Constants {
 	private String[] htmlFormatter = Const.DEFAULT_HTMLFORMATTER;//高亮标签
 	private int HighlightNum = Const.DEFAULT_HighlightNum;//高亮截取数量
 	
+	private int delayedSyn = 0;//延时同步时间
+	
 
+	public int getDelayedSyn() {
+		return delayedSyn;
+	}
+	
+	/**
+	 * 设置延时同步时间
+	 * @param delayedSyn
+	 */
+	public void setDelayedSyn(int delayedSyn) {
+		this.delayedSyn = delayedSyn;
+	}
 	/**
 	 * @fieldName: extDictPath
 	 * @fieldType: String
