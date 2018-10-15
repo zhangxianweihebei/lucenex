@@ -110,7 +110,7 @@ public class BaseConfig implements InitConfig{
 	 */
 	@Override
 	public void add(String dataKey) {
-		createSource(null, dataKey, false, null, null, null);
+		createSource(null, dataKey, constants.isHighlight(), null, null, null);
 	}
 
 	/* (non Javadoc)
@@ -122,7 +122,7 @@ public class BaseConfig implements InitConfig{
 	 */
 	@Override
 	public void add(String dataKey, Dic dic) {
-		createSource(null, dataKey, false, null, null, dic);
+		createSource(null, dataKey, constants.isHighlight(), null, null, dic);
 	}
 
 	/* (non Javadoc)
@@ -134,7 +134,7 @@ public class BaseConfig implements InitConfig{
 	 */
 	@Override
 	public void add(String dataKey, Class<?> clas) {
-		createSource(null, dataKey, false, null, clas, null);		
+		createSource(null, dataKey, constants.isHighlight(), null, clas, null);		
 	}
 
 	/* (non Javadoc)
@@ -147,7 +147,7 @@ public class BaseConfig implements InitConfig{
 	 */
 	@Override
 	public void add(String dataKey, Class<?> clas, Dic dic) {
-		createSource(null, dataKey, false, null, clas, dic);		
+		createSource(null, dataKey, constants.isHighlight(), null, clas, dic);		
 	}
 
 	/* (non Javadoc)
@@ -160,7 +160,7 @@ public class BaseConfig implements InitConfig{
 	@Override
 	public void add(String indexPath, String dataKey) {
 		// TODO 自动生成的方法存根
-		createSource(indexPath, dataKey, false, null, null, null);
+		createSource(indexPath, dataKey, constants.isHighlight(), null, null, null);
 
 	}
 
@@ -175,7 +175,7 @@ public class BaseConfig implements InitConfig{
 	@Override
 	public void add(String indexPath, String dataKey, Dic dic) {
 		// TODO 自动生成的方法存根
-		createSource(indexPath, dataKey, false, null, null, dic);
+		createSource(indexPath, dataKey, constants.isHighlight(), null, null, dic);
 
 	}
 
@@ -190,7 +190,7 @@ public class BaseConfig implements InitConfig{
 	@Override
 	public void add(String indexPath, String dataKey, Class<?> clas) {
 		// TODO 自动生成的方法存根
-		createSource(indexPath, dataKey, false, null, clas, null);
+		createSource(indexPath, dataKey, constants.isHighlight(), null, clas, null);
 
 	}
 
@@ -206,7 +206,7 @@ public class BaseConfig implements InitConfig{
 	@Override
 	public void add(String indexPath, String dataKey, Class<?> clas, Dic dic) {
 		// TODO 自动生成的方法存根
-		createSource(indexPath, dataKey, false, null, clas, dic);
+		createSource(indexPath, dataKey, constants.isHighlight(), null, clas, dic);
 	}
 
 	/* (non Javadoc)
