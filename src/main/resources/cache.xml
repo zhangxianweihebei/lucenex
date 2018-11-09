@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ehcache.xsd" updateCheck="true" monitoring="autodetect" dynamicConfig="true">
+    
+   
+    <diskStore path="java.io.tmpdir" />
+    
+    <!-- 
+        defaultCache:默认的缓存配置信息,如果不加特殊说明,则所有对象按照此配置项处理
+        maxElementsInMemory:设置了缓存的上限,最多存储多少个记录对象
+        eternal:代表对象是否永不过期
+        timeToIdleSeconds:最大的发呆时间
+        timeToLiveSeconds:最大的存活时间
+        overflowToDisk:是否允许对象被写入到磁盘
+     -->
+    <defaultCache 
+    	maxElementsInMemory="10000"
+    	eternal="false"
+        timeToIdleSeconds="120" 
+        timeToLiveSeconds="120" 
+        overflowToDisk="true" 
+        />
+        <!-- 
+        	用户连接池
+        	最多1万个
+        	超过6小时不用 自动清除 60*60*6 = 21600
+        	最长保质期 12小时  60*60*12 = 43200
+        	如果内存放不下 允许写入磁盘
+         -->
+        <cache name="session" maxElementsInMemory="10000" eternal="false" timeToIdleSeconds="21600" timeToLiveSeconds="43200" overflowToDisk="true" ></cache>
+        <!-- 
+        	服务器 负载记录
+        	最多1万个
+        	超过6小时不用 自动清除 60*60*6
+        	最长保质期 12小时  60*60*12
+        	如果内存放不下 允许写入磁盘
+         -->
+         <cache name="serverload" maxElementsInMemory="10000" eternal="false" timeToIdleSeconds="21600" timeToLiveSeconds="43200" overflowToDisk="true" ></cache>
+         
+         
+         <!-- 
+         	每分钟流量计数(每分钟访问量)
+         	30秒 无人访问自动删除
+         	最长保存 1分钟
+          -->
+         <cache name="serverloadflow" maxElementsInMemory="100000" eternal="false" timeToIdleSeconds="30" timeToLiveSeconds="60" overflowToDisk="true" ></cache>
+          <!-- 
+        	服务器 配置
+        	最多1万个
+        	永久存储
+        	如果内存放不下 允许写入磁盘
+         -->
+         <cache name="serverConfig" maxElementsInMemory="10000" eternal="true" overflowToDisk="true" ></cache>
+
+</ehcache>
