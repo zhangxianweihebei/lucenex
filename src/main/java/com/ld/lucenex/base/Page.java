@@ -1,12 +1,5 @@
 
 package com.ld.lucenex.base;
-
-
-
-
-
-
-
 import java.io.Serializable;
 import java.util.List;
 

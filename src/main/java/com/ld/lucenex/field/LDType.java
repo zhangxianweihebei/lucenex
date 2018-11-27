@@ -8,7 +8,6 @@ package com.ld.lucenex.field;
  *
  */
 public enum LDType {
-	
 	TextField,
 	StringField,
 	String_TextField,

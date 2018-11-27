@@ -7,7 +7,6 @@ public class LuceneX {
 
 	private static final LuceneX luceneX = new LuceneX();
 	private LuceneX() {
-		// TODO 自动生成的构造函数存根
 	}
 	public static LuceneX build() {
 		synchronized (luceneX) {

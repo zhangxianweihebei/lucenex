@@ -1,8 +1,11 @@
 package com.ld.lucenex.core;
 
 import java.io.IOException;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,34 +15,34 @@ public class ManySource{
 	
 	private static Logger logger = LoggerFactory.getLogger(ManySource.class);
 	
+	private static ThreadLocal<String> threadLocal = new ThreadLocal<>();
+	
 	private static volatile ConcurrentHashMap<String, SourceConfig> dataSource = new ConcurrentHashMap<>();
-	private static final ThreadLocal<String> contextHolder = new ThreadLocal<>();
-	/**
-	 * @Title:ManySource
-	 * @Description:TODO
-	 */
-	private ManySource() {
-		// TODO 自动生成的构造函数存根
-	}
 	
 	public static void putDataSource(String k,SourceConfig v) {
 		dataSource.put(k, v);
 	}
-	public static SourceConfig getDataSource(String k) {
-		return k == null ? null :(dataSource == null ? null : dataSource.get(k));
-	}
-	public static SourceConfig getDataSource() {
-		return dataSource.get(getContextHolder());
+	
+	public static void setKey(String key) {
+		threadLocal.set(key);
 	}
 	
-	public static void putContextHolder(String k) {
-		contextHolder.set(k);
+	public static SourceConfig getDataSource(String k) {
+		return dataSource.get(k);
 	}
-	public static String getContextHolder() {
-		return contextHolder.get();
-	}
-	public static void clearContextHolder() {
-		contextHolder.remove();
+	public static SourceConfig getDataSource() {
+		SourceConfig sourceConfig = null;
+		String key = threadLocal.get();
+		if(StringUtils.isNotBlank(key)) {
+			sourceConfig = dataSource.get(key);
+		}else {
+			Set<Entry<String, SourceConfig>> entrySet = dataSource.entrySet();
+			for (Entry<String, SourceConfig> entry : entrySet) {
+				sourceConfig = entry.getValue();
+				break;
+			}
+		}
+		return sourceConfig;
 	}
 	
 	/**

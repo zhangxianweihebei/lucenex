@@ -31,8 +31,6 @@ import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.util.BytesRef;
-import org.nlpcn.commons.lang.pinyin.Pinyin;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ld.lucenex.field.FieldKey;
 
@@ -148,15 +146,9 @@ public class ToDocument {
 		case String_TextField:
 			doc.add(new StringField(name+"_str", value,org.apache.lucene.document. Field.Store.YES));
 			doc.add(new TextField(name+"_txt", value, org.apache.lucene.document.Field.Store.YES));
-			if(fieldKey.pinyin()) {
-				doc.add(new TextField(name+"_pin", pinyin(value), org.apache.lucene.document.Field.Store.YES));
-			}
 			break;
 		case TextField:
 			doc.add(new TextField(name, value, org.apache.lucene.document.Field.Store.YES));
-			if(fieldKey.pinyin()) {
-				doc.add(new TextField(name+"_pin", pinyin(value), org.apache.lucene.document.Field.Store.YES));
-			}
 			break;
 		}
 
@@ -178,19 +170,4 @@ public class ToDocument {
 			break;
 		}
 	}
-
-	/**
-	 * 中文转拼音操作 (支持挺好)
-	 * @param v
-	 * @return
-	 */
-	private static String pinyin(String v) {
-		List<String> pinyin = Pinyin.pinyin(v);
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0,size = pinyin.size(); i < size; i++) {
-			sb.append(pinyin.get(i)).append(" ");
-		}
-		return sb.toString();
-	}
-
 }

@@ -17,9 +17,7 @@ import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
-
-import com.ld.lucenex.analyzer.Dic;
-
+import org.apache.lucene.search.highlight.Highlighter;
 /**
  * @ClassName: LucenexConfig
  * @Description: TODO
@@ -33,7 +31,20 @@ public class SourceConfig {
 	private IndexSearcher searcher;
 	private PerFieldAnalyzerWrapper analyzer;
 	private Class<?> defaultClass;
-	private Dic dic;
+	private Highlighter highlighter;
+	
+	/**
+	 * @param highlighter 要设置的 highlighter
+	 */
+	public void setHighlighter(Highlighter highlighter) {
+		this.highlighter = highlighter;
+	}
+	/**
+	 * @return highlighter
+	 */
+	public Highlighter getHighlighter() {
+		return highlighter;
+	}
 	public String getIndexPath() {
 		return indexPath;
 	}
@@ -76,18 +87,6 @@ public class SourceConfig {
 	public void setDefaultClass(Class<?> defaultClass) {
 		this.defaultClass = defaultClass;
 	}
-	/**
-	 * @return dic
-	 */
-	public Dic getDic() {
-		return dic;
-	}
-	/**
-	 * @param dic 要设置的 dic
-	 */
-	public void setDic(Dic dic) {
-		this.dic = dic;
-	}
 
 	public void restartReader() throws IOException {
 		try {
@@ -98,19 +97,4 @@ public class SourceConfig {
 			throw new IOException("Write conversion read error");
 		} 
 	}
-	/* (non Javadoc)
-	 * @Title: toString
-	 * @Description: TODO
-	 * @return
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "SourceConfig [indexPath=" + indexPath + ", highlight=" + highlight + ", writer=" + writer
-				+ ", searcher=" + searcher + ", analyzer=" + analyzer + ", defaultClass=" + defaultClass + ", dic="
-				+ dic + "]";
-	}
-	
-	
-	
 }

@@ -11,17 +11,9 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopScoreDocCollector;
 
 import com.ld.lucenex.base.Page;
-import com.ld.lucenex.core.Service;
 
-public class BasisService extends Service{
+public class BasisService implements Service{
 	
-	public BasisService() {
-		// TODO 自动生成的构造函数存根
-	}
-	public BasisService(String dataKey) {
-		super(dataKey);
-	}
-
 	/**
 	 * @Title: addIndex
 	 * @Description: 添加索引 支持 Object 和 map
@@ -52,7 +44,6 @@ public class BasisService extends Service{
 			}
 			return list;
 		}
-		highlighter = isHighlighter(query);
 		return null;
 	}
 
@@ -69,7 +60,7 @@ public class BasisService extends Service{
 		int pageSize = page.getPageSize();
 		int pageNum = page.getPageNum();
 		TopScoreDocCollector collector = TopScoreDocCollector.create(pageNum+pageSize);
-		searcher.search(query, collector);
+		config.getSearcher().search(query, collector);
 		int totalHits = collector.getTotalHits();
 		ScoreDoc[] scoreDocs = collector.topDocs(pageNum, pageSize).scoreDocs;
 		if(scoreDocs != null && scoreDocs.length > 0) {
@@ -78,9 +69,8 @@ public class BasisService extends Service{
 				list.add(getDocument(scoreDocs[i].doc));
 			}
 			page.setList(list);
-			page.setTotalRow(totalHits);
 		}
-		highlighter = isHighlighter(query);
+		page.setTotalRow(totalHits);
 		return page;
 	}
 

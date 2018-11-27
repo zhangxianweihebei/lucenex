@@ -9,9 +9,13 @@
  * @date: 2018年5月22日 下午6:20:11
  * @version: V1.0  
  */
-package com.ld.lucenex.config;
+package com.ld.lucenex.base;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.ld.lucenex.base.Const;
+import com.ld.lucenex.interce.LdInterface;
 
 /**
  * @ClassName: Constants
@@ -34,10 +38,23 @@ public final class Constants {
 	private boolean highlight = Const.DEFAULT_HIGHLIGHT;//是否高亮
 	private String[] htmlFormatter = Const.DEFAULT_HTMLFORMATTER;//高亮标签
 	private int HighlightNum = Const.DEFAULT_HighlightNum;//高亮截取数量
+	private List<LdInterface> LdInterface = new ArrayList<LdInterface>();
 	
 	private int delayedSyn = 0;//延时同步时间
 	
 
+	public void addInterface(LdInterface ldInterface) {
+		LdInterface.add(ldInterface);
+	}
+	public void addInterface(int i,LdInterface ldInterface) {
+		LdInterface.add(i,ldInterface);
+	}
+	/**
+	 * @return ldInterface
+	 */
+	public List<LdInterface> getLdInterface() {
+		return LdInterface;
+	}
 	public int getDelayedSyn() {
 		return delayedSyn;
 	}

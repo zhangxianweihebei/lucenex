@@ -31,21 +31,6 @@ import com.ld.lucenex.service.BasisService;
 public class SimpleService extends BasisService{
 	
 	/**
-	 * @Title:SimpleService
-	 * @Description:TODO
-	 */
-	public SimpleService(String dataKey) {
-		super(dataKey);
-	}
-	/**
-	 * @Title:SimpleService
-	 * @Description:TODO
-	 */
-	public SimpleService() {
-		// TODO 自动生成的构造函数存根
-	}
-	
-	/**
 	 * 查询集合  字段类型 为String/text
 	 * @Title: TermQuery
 	 * @Description: TODO
@@ -57,7 +42,7 @@ public class SimpleService extends BasisService{
 	 * @return: List<Document>
 	 */
 	public List<Document> TermQuery(String field,String value,int num) throws IOException{
-		TermQuery query = new org.apache.lucene.search.TermQuery(new Term(field,value));
+		TermQuery query = new TermQuery(new Term(field,value));
 		return searchList(query, num == 0 ? 10 : num);
 	}
 	
