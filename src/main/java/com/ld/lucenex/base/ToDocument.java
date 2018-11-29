@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.lucene.document.BinaryPoint;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.DoublePoint;
@@ -31,6 +32,7 @@ import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.util.BytesRef;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ld.lucenex.field.FieldKey;
 
@@ -46,19 +48,16 @@ public class ToDocument {
 	 * @Title: getDocument
 	 * @Description: Object 返回一个 Document
 	 * @param object
+	 * @param fields 
 	 * @return
 	 * @return: Document
 	 * @throws IllegalAccessException 
 	 */
-	public static Document getDocument(Object object,Class<?> clas){
+	public static Document getDocument(Object object,Class<?> clas, Field[] fields){
 		Object o = toObject(object,clas);
-		if(o == null) {
-			return null;
-		}
-		Field[] fields = clas.getDeclaredFields();
 		Document document = new Document();
 		document.add(new IntPoint("lucenex_total",0));
-		for (int i = 0; i < fields.length; i++) {
+		for (int i = 0,size = fields.length; i < size; i++) {
 			Field field = fields[i];
 			field.setAccessible(true);
 			if(field.isAnnotationPresent(FieldKey.class)) {
@@ -75,25 +74,23 @@ public class ToDocument {
 	
 	public static <T> List<Document> getDocuments(List<T> object,Class<?> clas){
 		List<Document> dataList = new ArrayList<>(object.size());
+		Field[] fields = FieldUtils.getAllFields(clas);
 		for (int i = 0,size = object.size(); i < size; i++) {
-			dataList.add(getDocument(object.get(i), clas));
+			T t = object.get(i);
+			dataList.add(getDocument(t, clas,fields));
+			t=null;
 		}
-		object.clear();
-		object = null;
 		return dataList;
 	}
 	
 	public static Object toObject(Object object, Class<?> clas) {
-		if(object == null) {
-			return null;
-		}
-		Object v = null;
-		if(object instanceof Map) {
-			v=new ObjectMapper().convertValue(object, clas);
+		if(object instanceof Object) {
+			return object;
+		}else if(object instanceof Map) {
+			return new ObjectMapper().convertValue(object, clas);
 		}else {
-			v=object;
+			return object;
 		}
-		return v;
 	}
 	
 	private static void add(Document doc,Field field,Object obj) throws IllegalAccessException {
