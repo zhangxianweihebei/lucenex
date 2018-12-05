@@ -1,7 +1,7 @@
 # lucenex
 基于JDK 1.8 & lucene 7.x 的搜索框架、在不影响原本性能的同时、提升80%的开发效率、降低70%的开发难度！！！
-# 稳定
-### javadoc https://apidoc.gitee.com/Myzhang/luceneplus
+# 文档
+### javadoc：https://apidoc.gitee.com/Myzhang/luceneplus
 # 更新日志
 ### v1.0
 *去除第三方分词依赖&无用的Jar
