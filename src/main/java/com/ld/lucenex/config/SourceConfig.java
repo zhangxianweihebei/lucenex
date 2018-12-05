@@ -32,62 +32,125 @@ public class SourceConfig {
 	private PerFieldAnalyzerWrapper analyzer;
 	private Class<?> defaultClass;
 	private Highlighter highlighter;
-	
+
+
 	/**
-	 * @param highlighter 要设置的 highlighter
+	 * 设置高亮对象
+	 * @param highlighter
 	 */
 	public void setHighlighter(Highlighter highlighter) {
 		this.highlighter = highlighter;
 	}
+
 	/**
-	 * @return highlighter
+	 * 获取高亮对象
+	 * @return
 	 */
 	public Highlighter getHighlighter() {
 		return highlighter;
 	}
+
+	/**
+	 * 获取索引目录
+	 * @return
+	 */
 	public String getIndexPath() {
 		return indexPath;
 	}
+
+	/**
+	 * 设置索引目录
+	 * @param indexPath
+	 */
 	public void setIndexPath(String indexPath) {
 		this.indexPath = indexPath;
 	}
+
+	/**
+	 * 判断是否开启高亮 true 开启 false 关闭
+	 * false 情况下Highlighter 高亮对象等于空
+	 * @return
+	 */
 	public boolean isHighlight() {
 		return highlight;
 	}
+
+	/**
+	 * 设置是否高亮
+	 * @param highlight
+	 */
 	public void setHighlight(boolean highlight) {
 		this.highlight = highlight;
 	}
+
+	/**
+	 * 获取一个写入源
+	 * @return
+	 */
 	public IndexWriter getWriter() {
 		return writer;
 	}
+
+	/**
+	 * 设置一个写入源
+	 * @param writer
+	 */
 	public void setWriter(IndexWriter writer) {
 		this.writer = writer;
 	}
+
+	/**
+	 * 获取一个检索源
+	 * @return
+	 */
 	public IndexSearcher getSearcher() {
 		return searcher;
 	}
+
+	/**
+	 * 设置一个检索源
+	 * @param searcher
+	 */
 	public void setSearcher(IndexSearcher searcher) {
 		this.searcher = searcher;
 	}
+
+	/**
+	 * 获取分词器 PerFieldAnalyzerWrapper
+	 * @return
+	 */
 	public PerFieldAnalyzerWrapper getAnalyzer() {
 		return analyzer;
 	}
+
+	/**
+	 * 设置一个分词器
+	 * @param analyzer
+	 */
 	public void setAnalyzer(PerFieldAnalyzerWrapper analyzer) {
 		this.analyzer = analyzer;
 	}
+
 	/**
-	 * @return defaultClass
+	 * 获取索引类 Class 用于读取字段
+	 * @return
 	 */
 	public Class<?> getDefaultClass() {
 		return defaultClass;
 	}
+
 	/**
-	 * @param defaultClass 要设置的 defaultClass
+	 * 设置一个索引类 Class
+	 * @param defaultClass
 	 */
 	public void setDefaultClass(Class<?> defaultClass) {
 		this.defaultClass = defaultClass;
 	}
 
+	/**
+	 * 刷新检索源
+	 * @throws IOException
+	 */
 	public void restartReader() throws IOException {
 		try {
 			DirectoryReader reader = DirectoryReader.open(this.writer);
