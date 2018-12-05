@@ -34,7 +34,9 @@ public class HIGIterface implements LdInterface{
 	@Override
 	public boolean beforeMethod(Object obj, Method method, Object[] args) {
 		SourceConfig dataSource = ManySource.getDataSource();
-		if(!dataSource.isHighlight()) return true;
+		if(!dataSource.isHighlight()){
+			return true;
+		}
 		String methodName = method.getName();
 		if(methodName.indexOf("query") != -1 || methodName.indexOf("search") != -1 
 				|| methodName.indexOf("find") != -1) {
