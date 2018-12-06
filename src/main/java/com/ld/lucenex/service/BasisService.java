@@ -8,7 +8,6 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopScoreDocCollector;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class BasisService implements Service {
@@ -17,7 +16,7 @@ public class BasisService implements Service {
      * @param list
      * @throws IOException
      * @Title: addIndex
-     * @Description: 添加索引 支持 Object 和 map
+     * @Description: 添加索引 支持 Object & map
      * @return: void
      */
     public void addIndex(List<?> list) throws IOException {
@@ -38,14 +37,7 @@ public class BasisService implements Service {
      */
     public List<Document> searchList(Query query, int n) throws IOException {
         ScoreDoc[] scoreDocs = search(query, n).scoreDocs;
-        if (scoreDocs != null && scoreDocs.length > 0) {
-            List<Document> list = new ArrayList<>(scoreDocs.length);
-            for (int i = 0; i < scoreDocs.length; i++) {
-                list.add(getDocument(scoreDocs[i].doc));
-            }
-            return list;
-        }
-        return null;
+        return getDocuments(scoreDocs);
     }
 
     /**
@@ -57,20 +49,14 @@ public class BasisService implements Service {
      * @Description: 简单分页查询
      * @return: Page<Document>
      */
-    public <T> Page<Document> searchList(Query query, Page<Document> page) throws IOException {
+    public Page<Document> searchList(Query query, Page<Document> page) throws IOException {
         int pageSize = page.getPageSize();
         int pageNum = page.getPageNum();
         TopScoreDocCollector collector = TopScoreDocCollector.create(pageNum + pageSize);
         config.getSearcher().search(query, collector);
         int totalHits = collector.getTotalHits();
         ScoreDoc[] scoreDocs = collector.topDocs(pageNum, pageSize).scoreDocs;
-        if (scoreDocs != null && scoreDocs.length > 0) {
-            List<Document> list = new ArrayList<>(scoreDocs.length);
-            for (int i = 0; i < scoreDocs.length; i++) {
-                list.add(getDocument(scoreDocs[i].doc));
-            }
-            page.setList(list);
-        }
+        page.setList(getDocuments(scoreDocs));
         page.setTotalRow(totalHits);
         return page;
     }

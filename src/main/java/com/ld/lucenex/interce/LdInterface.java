@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
 
 /**
  * 拦截器
+ *
  * @ClassName: LdInterface
  * @Description: TODO
  * @author: Myzhang
@@ -24,12 +25,13 @@ public interface LdInterface {
 
     /**
      * 前置通知
+     *
      * @param args
      * @param method
      * @param obj
+     * @return
      * @Title: beforeMethod
      * @Description: TODO
-     * @return
      * @return: boolean
      */
     default boolean beforeMethod(Object obj, Method method, Object[] args) {
@@ -38,12 +40,13 @@ public interface LdInterface {
 
     /**
      * 后置通知
+     *
      * @param args
      * @param method
      * @param retValFromSuper
+     * @return
      * @Title: afterMethod
      * @Description: TODO
-     * @return
      * @return: boolean
      */
     default boolean afterMethod(Object retValFromSuper, Method method, Object[] args) {

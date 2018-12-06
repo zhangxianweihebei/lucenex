@@ -17,6 +17,8 @@ import com.ld.lucenex.interce.LdInterface;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -28,10 +30,20 @@ import java.util.List;
  * @author: Myzhang
  * @date: 2018年11月27日 上午10:40:08
  */
-@SuppressWarnings("unchecked")
 public class LdService implements MethodInterceptor {
+
+    private static Logger logger = LoggerFactory.getLogger(LdService.class);
+
+
     public static final Constants constants = BaseConfig.baseConfig();
 
+    /**
+     * 获取一个默认的Service 默认就是第一个库
+     *
+     * @param clazz
+     * @param <T>
+     * @return
+     */
     public static <T> T newInstance(Class<T> clazz) {
         try {
             LdService interceptor = new LdService();
@@ -41,24 +53,27 @@ public class LdService implements MethodInterceptor {
             Object bean = e.create();
             return (T) bean;
         } catch (Throwable e) {
-            e.printStackTrace();
-            throw new Error(e.getMessage());
+            logger.error("LdService->newInstance error", e);
         }
+        return null;
     }
 
+    /**
+     * 获取一个指定库的Service
+     *
+     * @param clazz
+     * @param key
+     * @param <T>
+     * @return
+     */
     public static <T> T newInstance(Class<T> clazz, String key) {
         try {
             ManySource.setKey(key);
-            LdService interceptor = new LdService();
-            Enhancer e = new Enhancer();
-            e.setSuperclass(clazz);
-            e.setCallback(interceptor);
-            Object bean = e.create();
-            return (T) bean;
+            return newInstance(clazz);
         } catch (Throwable e) {
-            e.printStackTrace();
-            throw new Error(e.getMessage());
+            logger.error("LdService->newInstance error", e);
         }
+        return null;
     }
 
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {

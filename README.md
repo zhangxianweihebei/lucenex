@@ -3,10 +3,14 @@
 # 文档
 ### javadoc：https://apidoc.gitee.com/Myzhang/luceneplus
 # 更新日志
+### v1.1
+*补充大量文档注释<br>
+*精简&优化代码<br>
+*修复一个错误的Demo<br>
 ### v1.0
-*去除第三方分词依赖&无用的Jar
-*使用cglib 动态代理创建 Service
-*新增拦截器
+*去除第三方分词依赖&无用的Jar<br>
+*使用cglib 动态代理创建 Service<br>
+*新增拦截器<br>
 *添加更新 默认异步
 
 # 特点

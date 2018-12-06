@@ -24,6 +24,8 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.store.NoLockFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +38,8 @@ import java.nio.file.Path;
  * @date: 2018年5月22日 下午12:30:22
  */
 public class BaseConfig implements InitConfig {
+
+    private static Logger logger = LoggerFactory.getLogger(BaseConfig.class);
 
     private static final Constants constants = new Constants();
     private static final BaseConfig baseConfig = new BaseConfig();
@@ -90,7 +94,7 @@ public class BaseConfig implements InitConfig {
             config.restartReader();
             ManySource.putDataSource(dataKey, config);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("BaseConfig.createSource error", e);
         }
     }
 

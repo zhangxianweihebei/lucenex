@@ -37,6 +37,7 @@ public class SourceConfig {
 
     /**
      * 设置高亮对象
+     *
      * @param highlighter
      */
     public void setHighlighter(Highlighter highlighter) {
@@ -45,6 +46,7 @@ public class SourceConfig {
 
     /**
      * 获取高亮对象
+     *
      * @return
      */
     public Highlighter getHighlighter() {
@@ -53,6 +55,7 @@ public class SourceConfig {
 
     /**
      * 获取索引目录
+     *
      * @return
      */
     public String getIndexPath() {
@@ -61,6 +64,7 @@ public class SourceConfig {
 
     /**
      * 设置索引目录
+     *
      * @param indexPath
      */
     public void setIndexPath(String indexPath) {
@@ -70,6 +74,7 @@ public class SourceConfig {
     /**
      * 判断是否开启高亮 true 开启 false 关闭
      * false 情况下Highlighter 高亮对象等于空
+     *
      * @return
      */
     public boolean isHighlight() {
@@ -78,6 +83,7 @@ public class SourceConfig {
 
     /**
      * 设置是否高亮
+     *
      * @param highlight
      */
     public void setHighlight(boolean highlight) {
@@ -86,6 +92,7 @@ public class SourceConfig {
 
     /**
      * 获取一个写入源
+     *
      * @return
      */
     public IndexWriter getWriter() {
@@ -94,6 +101,7 @@ public class SourceConfig {
 
     /**
      * 设置一个写入源
+     *
      * @param writer
      */
     public void setWriter(IndexWriter writer) {
@@ -102,6 +110,7 @@ public class SourceConfig {
 
     /**
      * 获取一个检索源
+     *
      * @return
      */
     public IndexSearcher getSearcher() {
@@ -110,6 +119,7 @@ public class SourceConfig {
 
     /**
      * 设置一个检索源
+     *
      * @param searcher
      */
     public void setSearcher(IndexSearcher searcher) {
@@ -118,6 +128,7 @@ public class SourceConfig {
 
     /**
      * 获取分词器 PerFieldAnalyzerWrapper
+     *
      * @return
      */
     public PerFieldAnalyzerWrapper getAnalyzer() {
@@ -126,6 +137,7 @@ public class SourceConfig {
 
     /**
      * 设置一个分词器
+     *
      * @param analyzer
      */
     public void setAnalyzer(PerFieldAnalyzerWrapper analyzer) {
@@ -134,6 +146,7 @@ public class SourceConfig {
 
     /**
      * 获取索引类 Class 用于读取字段
+     *
      * @return
      */
     public Class<?> getDefaultClass() {
@@ -142,6 +155,7 @@ public class SourceConfig {
 
     /**
      * 设置一个索引类 Class
+     *
      * @param defaultClass
      */
     public void setDefaultClass(Class<?> defaultClass) {
@@ -150,6 +164,7 @@ public class SourceConfig {
 
     /**
      * 刷新检索源
+     *
      * @throws IOException
      */
     public void restartReader() throws IOException {

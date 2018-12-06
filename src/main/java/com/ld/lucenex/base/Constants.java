@@ -24,189 +24,134 @@ import java.util.List;
  */
 public final class Constants {
 
-    private boolean devMode = Const.DEFAULT_DEV_MODE;//开发&上线
+    private boolean devMode = Const.DEFAULT_DEV_MODE;
+    private Class<?> defaultClass;
+    private String defaultDisk;
+    private boolean highlight = Const.DEFAULT_HIGHLIGHT;
+    private String[] htmlFormatter = Const.DEFAULT_HTMLFORMATTER;
+    private int HighlightNum = Const.DEFAULT_HighlightNum;
+    private List<LdInterface> LdInterface = new ArrayList<>();
 
-    private Class<?> defaultClass;//默认Class
-
-
-    private boolean isAsynchronous = Const.DEFAULT_ASYNCHRONOUS;//同步异步
-
-    private String defaultDisk;//默认磁盘
-
-
-    private boolean highlight = Const.DEFAULT_HIGHLIGHT;//是否高亮
-    private String[] htmlFormatter = Const.DEFAULT_HTMLFORMATTER;//高亮标签
-    private int HighlightNum = Const.DEFAULT_HighlightNum;//高亮截取数量
-    private List<LdInterface> LdInterface = new ArrayList<LdInterface>();
-
-    private int delayedSyn = 0;//延时同步时间
-
-
+    /**
+     * 添加一个拦截器
+     *
+     * @param ldInterface
+     */
     public void addInterface(LdInterface ldInterface) {
         LdInterface.add(ldInterface);
     }
 
+    /**
+     * 添加一个指定位置的拦截器
+     *
+     * @param i
+     * @param ldInterface
+     */
     public void addInterface(int i, LdInterface ldInterface) {
         LdInterface.add(i, ldInterface);
     }
 
     /**
-     * @return ldInterface
+     * 获取拦截器集合
+     *
+     * @return
      */
     public List<LdInterface> getLdInterface() {
         return LdInterface;
     }
 
-    public int getDelayedSyn() {
-        return delayedSyn;
-    }
 
     /**
-     * 设置延时同步时间
-     * @param delayedSyn
-     */
-    public void setDelayedSyn(int delayedSyn) {
-        this.delayedSyn = delayedSyn;
-    }
-
-    /**
-     * @fieldName: extDictPath
-     * @fieldType: String
-     * @Description: 公共启用词库目录
-     */
-    private String extDictPath;
-
-    /**
-     * @fieldName: extStopwordPath
-     * @fieldType: String
-     * @Description: 公共停用词库目录
-     */
-    private String extStopwordPath;
-
-    /**
-     * @param devMode 要设置的 devMode
+     * 设置是否为开发模式
+     *
+     * @param devMode
      */
     public void setDevMode(boolean devMode) {
         this.devMode = devMode;
     }
 
     /**
-     * @param highlightNum 要设置的 highlightNum
+     * 获取高亮截词数量
+     *
+     * @param highlightNum
      */
     public void setHighlightNum(int highlightNum) {
         HighlightNum = highlightNum;
     }
 
     /**
-     * @return highlightNum
+     * 获取高亮截词数量
+     *
+     * @return
      */
     public int getHighlightNum() {
         return HighlightNum;
     }
 
     /**
-     * @param htmlFormatter 要设置的 htmlFormatter
+     * 设置高亮标签
+     *
+     * @param prefix
+     * @param suffix
      */
     public void setHtmlFormatter(String prefix, String suffix) {
         this.htmlFormatter = new String[]{prefix, suffix};
     }
 
     /**
-     * @return htmlFormatter
+     * 获取高亮标签
      */
     public String[] getHtmlFormatter() {
         return htmlFormatter;
     }
 
     /**
-     * @return devMode
+     * 获取当前启用模式
      */
     public boolean isDevMode() {
         return devMode;
     }
 
     /**
-     * @param defaultClass 要设置的 defaultClass
+     * 设置存储类 class
      */
     public void setDefaultClass(Class<?> defaultClass) {
         this.defaultClass = defaultClass;
     }
 
     /**
-     * @return defaultClass
+     * 获取存储类 class
      */
     public Class<?> getDefaultClass() {
         return defaultClass;
     }
 
     /**
-     * @param highlight 要设置的 highlight
+     * 设置是否高亮 true false
      */
     public void setHighlight(boolean highlight) {
         this.highlight = highlight;
     }
 
     /**
-     * @return highlight
+     * 获取是否高亮
      */
     public boolean isHighlight() {
         return highlight;
     }
 
     /**
-     * @param defaultDisk 要设置的 defaultDisk
+     * 设置默认存储目录
      */
     public void setDefaultDisk(String defaultDisk) {
         this.defaultDisk = defaultDisk;
     }
 
     /**
-     * @return defaultDisk
+     * 获取默认存储目录
      */
     public String getDefaultDisk() {
         return defaultDisk;
     }
 
-    /**
-     * @param extDictPath 要设置的 extDictPath
-     */
-    public void setExtDictPath(String extDictPath) {
-        this.extDictPath = extDictPath;
-    }
-
-    /**
-     * @param extStopwordPath 要设置的 extStopwordPath
-     */
-    public void setExtStopwordPath(String extStopwordPath) {
-        this.extStopwordPath = extStopwordPath;
-    }
-
-    /**
-     * @return extDictPath
-     */
-    public String getExtDictPath() {
-        return extDictPath;
-    }
-
-    /**
-     * @return extStopwordPath
-     */
-    public String getExtStopwordPath() {
-        return extStopwordPath;
-    }
-
-    /**
-     * @return isAsynchronous
-     */
-    public boolean isAsynchronous() {
-        return isAsynchronous;
-    }
-
-    /**
-     * 设置异步 同步数据范围《添加，删除，修改》
-     * @param isAsynchronous 要设置的 isAsynchronous
-     */
-    public void setAsynchronous(boolean isAsynchronous) {
-        this.isAsynchronous = isAsynchronous;
-    }
 }

@@ -31,13 +31,14 @@ public class SimpleService extends BasisService {
 
     /**
      * 查询集合  字段类型 为String/text
-     * @Title: TermQuery
-     * @Description: TODO
+     *
      * @param field
      * @param value
      * @param num
      * @return
      * @throws IOException
+     * @Title: TermQuery
+     * @Description: TODO
      * @return: List<Document>
      */
     public List<Document> TermQuery(String field, String value, int num) throws IOException {
@@ -47,12 +48,13 @@ public class SimpleService extends BasisService {
 
     /**
      * 精确删除 字段类型为int
-     * @Title: IntDelete
-     * @Description: TODO
+     *
      * @param field
      * @param value
      * @return
      * @throws IOException
+     * @Title: IntDelete
+     * @Description: TODO
      * @return: long
      */
     public long IntDelete(String field, int value) throws IOException {

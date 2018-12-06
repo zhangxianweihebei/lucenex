@@ -16,6 +16,8 @@ import com.ld.lucenex.field.FieldKey;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.lucene.document.*;
 import org.apache.lucene.util.BytesRef;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -31,14 +33,17 @@ import java.util.Map;
  */
 public class ToDocument {
 
+    private static Logger logger = LoggerFactory.getLogger(ToDocument.class);
+
+
     /**
-     * @Title: getDocument
-     * @Description: Object 返回一个 Document
      * @param object
      * @param fields
      * @return
-     * @return: Document
      * @throws IllegalAccessException
+     * @Title: getDocument
+     * @Description: Object 返回一个 Document
+     * @return: Document
      */
     public static Document getDocument(Object object, Class<?> clas, Field[] fields) {
         Object o = toObject(object, clas);
@@ -51,7 +56,7 @@ public class ToDocument {
                 try {
                     add(document, field, o);
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    logger.error("ToDocument.getDocument error", e);
                 }
             }
 
@@ -59,18 +64,24 @@ public class ToDocument {
         return document;
     }
 
+    /**
+     * 获取一个 List<Document>
+     *
+     * @param object
+     * @param clas
+     * @param <T>
+     * @return
+     */
     public static <T> List<Document> getDocuments(List<T> object, Class<?> clas) {
         List<Document> dataList = new ArrayList<>(object.size());
         Field[] fields = FieldUtils.getAllFields(clas);
         for (int i = 0, size = object.size(); i < size; i++) {
-            T t = object.get(i);
-            dataList.add(getDocument(t, clas, fields));
-            t = null;
+            dataList.add(getDocument(object.get(i), clas, fields));
         }
         return dataList;
     }
 
-    public static Object toObject(Object object, Class<?> clas) {
+    private static Object toObject(Object object, Class<?> clas) {
         if (object instanceof Object) {
             return object;
         } else if (object instanceof Map) {

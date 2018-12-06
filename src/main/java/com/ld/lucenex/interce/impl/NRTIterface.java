@@ -15,6 +15,8 @@ import com.ld.lucenex.base.BaseConfig;
 import com.ld.lucenex.config.SourceConfig;
 import com.ld.lucenex.core.ManySource;
 import com.ld.lucenex.interce.LdInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -27,6 +29,17 @@ import java.util.concurrent.CompletableFuture;
  * @date: 2018年11月27日 下午2:35:56
  */
 public class NRTIterface implements LdInterface {
+
+    private static Logger logger = LoggerFactory.getLogger(NRTIterface.class);
+
+    /**
+     * 在方法执行后异步运行
+     *
+     * @param retValFromSuper
+     * @param method
+     * @param args
+     * @return
+     */
     @Override
     public boolean afterMethod(Object retValFromSuper, Method method, Object[] args) {
         String methodName = method.getName();
@@ -39,8 +52,9 @@ public class NRTIterface implements LdInterface {
                     if (BaseConfig.baseConfig().isDevMode()) {
                         dataSource.getWriter().commit();
                     }
+                    logger.info("NRTIterface->afterMethod success");
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("NRTIterface->afterMethod error", e);
                 }
             });
         }
