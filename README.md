@@ -21,7 +21,15 @@
 ### 支持操作回退
 ### 可自定义分词器
 ### 默认异步提交和更新
-
+# 安装
+### maven
+```
+<dependency>
+  <groupId>com.github.zhangxianweihebei</groupId>
+  <artifactId>lucenex</artifactId>
+  <version>1.0</version>
+</dependency>
+```
 # 用法
 ### 1、继承 LuceneXConfig
 ```
