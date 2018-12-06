@@ -2,16 +2,27 @@
 基于JDK 1.8 & lucene 7.x 的搜索框架、在不影响原本性能的同时、提升80%的开发效率、降低70%的开发难度！！！
 # 文档
 ### javadoc：https://apidoc.gitee.com/Myzhang/luceneplus
+### 轻松入门：https://gitee.com/Myzhang/luceneplus/blob/master/README.md
+### 入门实例：https://gitee.com/Myzhang/luceneplus/tree/master/src/test/java/com/ld/lucenex/demo
 # 更新日志
 ### v1.1
-*补充大量文档注释<br>
-*精简&优化代码<br>
-*修复一个错误的Demo<br>
+* 补充大量文档注释<br>
+* 精简&优化代码<br>
+* 修复一个错误的Demo<br>
 ### v1.0
-*去除第三方分词依赖&无用的Jar<br>
-*使用cglib 动态代理创建 Service<br>
-*新增拦截器<br>
-*添加更新 默认异步
+* 去除第三方分词依赖&无用的Jar<br>
+* 使用cglib 动态代理创建 Service<br>
+* 新增拦截器<br>
+* 添加更新 默认异步
+
+# 亮点
+## 轻 ~ 不足千行
+## 简 ~ 零配置项
+## 全 ~ 内置丰富
+## 易 ~ 入门简单
+## 快 ~ 接近原生
+## 稳 ~ 坚如磐石
+## 展 ~ 插件扩展
 
 # 特点
 ### 原声Lucene 用法
@@ -25,6 +36,8 @@
 ### 支持操作回退
 ### 可自定义分词器
 ### 默认异步提交和更新
+# 社区
+* QQ群号:475349334
 # 安装
 ### maven
 ```
