@@ -26,14 +26,4 @@ public @interface FieldKey {
      * @return
      */
     LDSort sort() default LDSort.SortedDocValuesField;
-
-    /**
-     * 是否高亮
-     *
-     * @return
-     */
-    boolean highlight() default false;
-
-    boolean pinyin() default false;
-
 }

@@ -13,6 +13,7 @@ package com.ld.lucenex.base;
 
 import com.ld.lucenex.config.LuceneXConfig;
 import com.ld.lucenex.config.SourceConfig;
+import com.ld.lucenex.core.LuceneX;
 import com.ld.lucenex.core.ManySource;
 import com.ld.lucenex.interce.impl.HIGIterface;
 import com.ld.lucenex.interce.impl.NRTIterface;
@@ -45,6 +46,10 @@ public class BaseConfig implements InitConfig {
     private static final BaseConfig baseConfig = new BaseConfig();
 
     public static void configLuceneX(LuceneXConfig config) {
+        Runtime.getRuntime().addShutdownHook(new Thread(()->{
+            logger.warn("运行结束保存所有数据");
+            LuceneX.closeAll();
+        }));
         constants.addInterface(0, new NRTIterface());
         constants.addInterface(1, new HIGIterface());
         config.configConstant(constants);

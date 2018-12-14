@@ -3,7 +3,7 @@ package com.ld.lucenex.demo;
 import com.ld.lucenex.field.FieldKey;
 import com.ld.lucenex.field.LDType;
 
-public class Empty {
+public class Empty{
 
     @FieldKey(type = LDType.IntPoint)
     private int id;

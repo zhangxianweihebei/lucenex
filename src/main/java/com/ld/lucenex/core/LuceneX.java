@@ -22,4 +22,18 @@ public class LuceneX {
             logger.error("lucenex start error", e);
         }
     }
+
+    /**
+     * 提交所有
+     */
+    public static void submitAll(){
+        ManySource.submit();
+    }
+
+    /**
+     * 关闭所有
+     */
+    public static void closeAll(){
+        ManySource.close();
+    }
 }

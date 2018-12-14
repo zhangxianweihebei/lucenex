@@ -9,14 +9,29 @@ package com.ld.lucenex.field;
 public enum LDSort {
 
 
-    SortedDocValuesField,//按照byte[]列顺序进行排序/刻面
+    /**
+     * 按照byte[]列顺序进行排序/刻面
+     */
+    SortedDocValuesField,
 
-    SortedSetDocValuesField,//按照SortedSet<byte[]>列顺序进行排序/刻面
+    /**
+     * 按照SortedSet<byte[]>列顺序进行排序/刻面
+     */
+    SortedSetDocValuesField,
 
-    NumericDocValuesField,//按照long列顺序进行排序/刻面
+    /**
+     * 按照long列顺序进行排序/刻面
+     */
+    NumericDocValuesField,
 
-    SortedNumericDocValuesField,//按照SortedSet<long>列顺序进行排序/刻面
+    /**
+     * 按照SortedSet<long>列顺序进行排序/刻面
+     */
+    SortedNumericDocValuesField,
 
-    SortNull //默认空
+    /**
+     * null
+     */
+    SortNull
 
 }
