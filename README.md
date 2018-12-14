@@ -5,6 +5,13 @@
 ### 轻松入门：https://gitee.com/Myzhang/luceneplus/blob/master/README.md
 ### 入门实例：https://gitee.com/Myzhang/luceneplus/tree/master/src/test/java/com/ld/lucenex/demo
 # 更新日志
+### v1.2
+* 增加jfinal、springboot、servlet等集成插件<br>
+* 精简代码<br>
+* 增加两个实用方法<br>
+* 删除2个依赖<br>
+* 适配 javabean and map and fastjson 直接添加<br>
+* 自动提交&关闭数据、避免丢失数据或手动提交<br>
 ### v1.1
 * 补充大量文档注释<br>
 * 精简&优化代码<br>
@@ -16,26 +23,26 @@
 * 添加更新 默认异步
 
 # 亮点
-## 轻 ~ 不足千行
-## 简 ~ 零配置项
-## 全 ~ 内置丰富
-## 易 ~ 入门简单
-## 快 ~ 接近原生
-## 稳 ~ 坚如磐石
-## 展 ~ 插件扩展
+* 轻 ~ 不足千行
+* 简 ~ 零配置项
+* 全 ~ 内置丰富
+* 易 ~ 入门简单
+* 快 ~ 接近原生
+* 稳 ~ 坚如磐石
+* 展 ~ 插件扩展
 
 # 特点
-### 原声Lucene 用法
-### 注解式声明字段
-### 多库自动切换
-### 自动管理资源创建于释放
-### 自动高性能近实时索引
-### 可持续扩展的Service 接口设计
-### 内置常用的 增删改查
-### 可直接添加Java对象与Map集合 无需手动创建 Document
-### 支持操作回退
-### 可自定义分词器
-### 默认异步提交和更新
+* 原声Lucene 用法
+* 注解式声明字段
+* 多库自动切换
+* 自动管理资源创建于释放
+* 自动高性能近实时索引
+* 可持续扩展的Service 接口设计
+* 内置常用的 增删改查
+* 可直接添加Java对象与Map集合 无需手动创建 Document
+* 支持操作回退
+* 可自定义分词器
+* 默认异步提交和更新
 # 社区
 * QQ群号:475349334
 # 安装
@@ -44,7 +51,7 @@
 <dependency>
   <groupId>com.github.zhangxianweihebei</groupId>
   <artifactId>lucenex</artifactId>
-  <version>1.0</version>
+  <version>1.1</version>
 </dependency>
 ```
 # 用法
