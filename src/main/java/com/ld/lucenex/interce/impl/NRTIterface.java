@@ -46,15 +46,17 @@ public class NRTIterface implements LdInterface {
         if (methodName.indexOf("add") != -1 || methodName.indexOf("save") != -1
                 || methodName.indexOf("update") != -1 || methodName.indexOf("del") != -1) {
             SourceConfig dataSource = ManySource.getDataSource();
-            try {
-                dataSource.restartReader();
-                if (BaseConfig.baseConfig().isDevMode()) {
-                    dataSource.getWriter().commit();
+            CompletableFuture.runAsync(() -> {
+                try {
+                    dataSource.restartReader();
+                    if (BaseConfig.baseConfig().isDevMode()) {
+                        dataSource.getWriter().commit();
+                    }
+                    logger.info("NRTIterface->afterMethod success");
+                } catch (IOException e) {
+                    logger.error("NRTIterface->afterMethod error", e);
                 }
-                logger.info("NRTIterface->afterMethod success");
-            } catch (IOException e) {
-                logger.error("NRTIterface->afterMethod error", e);
-            }
+            });
         }
         return true;
     }
