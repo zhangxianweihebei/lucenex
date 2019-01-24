@@ -23,8 +23,16 @@ public class BasisService implements Service {
         List<Document> document = toDocument(list);
         addDocuments(document);
     }
-
-    ;
+    
+    /**
+     * 单个对象添加
+     * @param obj
+     * @throws IOException
+     */
+    public void addIndex(Object obj) throws IOException {
+        Document document = toDocument(obj);
+        addDocument(document);
+    }
 
     /**
      * @param query

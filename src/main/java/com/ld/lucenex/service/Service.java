@@ -14,6 +14,8 @@ package com.ld.lucenex.service;
 import com.ld.lucenex.base.ToDocument;
 import com.ld.lucenex.config.SourceConfig;
 import com.ld.lucenex.core.ManySource;
+
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
@@ -22,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -120,6 +123,11 @@ interface Service {
 
     default List<Document> toDocument(List<?> list) {
         return ToDocument.getDocuments(list, config.getDefaultClass());
+    }
+    
+    default Document toDocument(Object object) {
+    	Field[] fields = FieldUtils.getAllFields(config.getDefaultClass());
+        return ToDocument.getDocument(object, fields);
     }
 
     /**
