@@ -5,6 +5,9 @@
 ### 轻松入门：https://gitee.com/Myzhang/luceneplus/blob/master/README.md
 ### 入门实例：https://gitee.com/Myzhang/luceneplus/tree/master/src/test/java/com/ld/lucenex/demo
 # 更新日志
+### v1.3
+* 增加单个对象添加索引<br>
+* 同步实时索引<br>
 ### v1.2
 * 增加jfinal、springboot、servlet等集成插件<br>
 * 精简代码<br>
