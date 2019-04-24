@@ -46,6 +46,10 @@ public class ManySource {
         threadLocal.set(key);
     }
 
+    public static String get(){
+        return threadLocal.get();
+    }
+
     /**
      * 获取一个制定名字的库
      *
@@ -83,12 +87,12 @@ public class ManySource {
      */
     public static void submit() {
         dataSource.forEach((k, v) -> {
-            logger.info("提交<" + k + ">数据源");
+            logger.info("提交<{}>数据源",k);
             try {
                 v.getWriter().commit();
                 v.restartReader();
             } catch (Exception e) {
-                logger.error("提交<" + k + ">数据源", e);
+                logger.error("提交<{}>数据源",k, e);
             }
         });
     }

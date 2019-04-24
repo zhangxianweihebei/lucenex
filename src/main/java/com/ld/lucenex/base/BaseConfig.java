@@ -47,7 +47,6 @@ public class BaseConfig implements InitConfig {
 
     public static void configLuceneX(LuceneXConfig config) {
         Runtime.getRuntime().addShutdownHook(new Thread(()->{
-            logger.warn("运行结束保存所有数据");
             LuceneX.closeAll();
         }));
         constants.addInterface(0, new NRTIterface());
