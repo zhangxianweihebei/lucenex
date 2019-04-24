@@ -34,6 +34,17 @@ public class BasisService implements Service {
         addDocument(document);
     }
 
+
+
+    public Document searchOneDoc(Query query) throws IOException {
+        ScoreDoc[] scoreDocs = search(query, 10).scoreDocs;
+        if(scoreDocs.length == 0) return null;
+        if(scoreDocs.length > 1){
+            throw new RuntimeException("Expectations are one, results are multiple");
+        }
+        return getDocument(scoreDocs[0].doc);
+    }
+
     /**
      * @param query
      * @param n
