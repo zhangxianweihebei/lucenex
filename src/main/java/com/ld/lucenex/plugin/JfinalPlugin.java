@@ -6,13 +6,15 @@ import com.ld.lucenex.config.LuceneXConfig;
 import com.ld.lucenex.core.ManySource;
 
 /**
+ *
  * jfinal 插件
  */
-public class JFinalPlugin implements IPlugin {
+public class JfinalPlugin implements IPlugin {
 
     LuceneXConfig config;
 
-    public JFinalPlugin(LuceneXConfig config){
+    public JfinalPlugin(LuceneXConfig config){
+        System.out.println("jksjdksd");
         this.config = config;
     }
 

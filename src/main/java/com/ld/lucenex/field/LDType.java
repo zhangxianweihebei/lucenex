@@ -6,6 +6,7 @@ package com.ld.lucenex.field;
  *
  * @author zxw
  */
+
 public enum LDType {
     TextField,
     StringField,

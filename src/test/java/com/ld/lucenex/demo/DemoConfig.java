@@ -14,6 +14,8 @@ public class DemoConfig extends LuceneXConfig {
      */
     @Override
     public void configConstant(Constants me) {
+        me.setDefaultDisk("/Users/a1/");
+        me.setDefaultClass(Empty.class);
     }
 
     /**
@@ -22,7 +24,7 @@ public class DemoConfig extends LuceneXConfig {
      */
     @Override
     public void configLuceneX(BaseConfig me) {
-        // 存储目录 、名称、高亮、分词器、存储类
-        me.add("d:/", "test", false, new PerFieldAnalyzerWrapper(new StandardAnalyzer()), Empty.class);
+        me.add("123");
+        me.add("456");
     }
 }

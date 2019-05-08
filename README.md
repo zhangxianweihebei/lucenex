@@ -5,6 +5,9 @@
 ### 轻松入门：https://gitee.com/Myzhang/luceneplus/blob/master/README.md
 ### 入门实例：https://gitee.com/Myzhang/luceneplus/tree/master/src/test/java/com/ld/lucenex/demo
 # 更新日志
+### v1.4
+* 新增 searchOneDoc 方法
+* 新增 SimpleExample 用例
 ### v1.3
 * 增加单个对象添加索引<br>
 * 同步实时索引<br>
@@ -38,14 +41,14 @@
 * 原声Lucene 用法
 * 注解式声明字段
 * 多库自动切换
-* 自动管理资源创建于释放
-* 自动高性能近实时索引
+* 自带管理资源创建于释放
+* 自带高性能近实时索引
 * 可持续扩展的Service 接口设计
-* 内置常用的 增删改查
+* 内置丰富常用接口
 * 可直接添加Java对象与Map集合 无需手动创建 Document
 * 支持操作回退
 * 可自定义分词器
-* 默认异步提交和更新
+* 异常退出数据保护
 # 社区
 * QQ群号:475349334
 # 安装
