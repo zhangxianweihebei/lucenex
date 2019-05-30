@@ -1,14 +1,14 @@
 package com.ld.lucenex.core;
 
-import com.ld.lucenex.config.SourceConfig;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.ld.lucenex.config.SourceConfig;
 
 /**
  * 多库管理类
@@ -68,7 +68,7 @@ public class ManySource {
     public static SourceConfig getDataSource() {
         SourceConfig sourceConfig = null;
         String key = threadLocal.get();
-        if (StringUtils.isNotBlank(key)) {
+        if (key != null) {
             sourceConfig = getDataSource(key);
         } else {
             Set<Entry<String, SourceConfig>> entrySet = dataSource.entrySet();

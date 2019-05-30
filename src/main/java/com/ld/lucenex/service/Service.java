@@ -11,30 +11,34 @@
  */
 package com.ld.lucenex.service;
 
-import com.ld.lucenex.base.ToDocument;
-import com.ld.lucenex.config.SourceConfig;
-import com.ld.lucenex.core.ManySource;
-
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexableField;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.TopFieldDocs;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.ld.lucenex.base.ToDocument;
+import com.ld.lucenex.config.SourceConfig;
+import com.ld.lucenex.core.ManySource;
+
 /**
  * @ClassName: Service
  * @Description: TODO
  * @author: Myzhang
+ * @param <T>
  * @date: 2018年5月23日 下午6:46:22
  */
-interface Service {
+interface Service<T> {
 
     SourceConfig config = ManySource.getDataSource();
     Logger logger = LoggerFactory.getLogger(Service.class);
@@ -73,6 +77,15 @@ interface Service {
         List<Document> documents = new ArrayList(scoreDocs.length);
         for (int i = 0, size = scoreDocs.length; i < size; i++) {
             documents.add(getDocument(scoreDocs[i].doc));
+        }
+        return documents;
+    }
+    
+    default List<T> getObjects(ScoreDoc[] scoreDocs) throws IOException {
+        List<T> documents = new ArrayList(scoreDocs.length);
+        Class<?> defaultClass = config.getDefaultClass();
+        for (int i = 0, size = scoreDocs.length; i < size; i++) {
+            documents.add(ToDocument.documentToObject(defaultClass, getDocument(scoreDocs[i].doc)));
         }
         return documents;
     }
@@ -126,7 +139,7 @@ interface Service {
     }
     
     default Document toDocument(Object object) {
-    	Field[] fields = FieldUtils.getAllFields(config.getDefaultClass());
+    	Field[] fields = config.getDefaultClass().getDeclaredFields();
         return ToDocument.getDocument(object, fields);
     }
 

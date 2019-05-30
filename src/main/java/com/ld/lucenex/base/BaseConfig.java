@@ -17,7 +17,6 @@ import com.ld.lucenex.core.LuceneX;
 import com.ld.lucenex.core.ManySource;
 import com.ld.lucenex.interce.impl.HIGIterface;
 import com.ld.lucenex.interce.impl.NRTIterface;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
@@ -63,8 +62,8 @@ public class BaseConfig implements InitConfig {
                              Class<?> clas) {
         try {
             SourceConfig config = new SourceConfig();
-            if (StringUtils.isBlank(indexPath)) {
-                if (StringUtils.isNotBlank(constants.getDefaultDisk())) {
+            if (indexPath == null) {
+                if (constants.getDefaultDisk() != null) {
                     indexPath = constants.getDefaultDisk();
                 } else {
                     throw new NullPointerException("There is no default disk");

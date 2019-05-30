@@ -51,7 +51,6 @@ public class NRTIterface implements LdInterface {
 				if (BaseConfig.baseConfig().isDevMode()) {
 					dataSource.getWriter().commit();
 				}
-				logger.info("NRTIterface->afterMethod success");
 			} catch (IOException e) {
 				logger.error("NRTIterface->afterMethod error", e);
 			}

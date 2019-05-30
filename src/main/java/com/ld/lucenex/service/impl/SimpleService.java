@@ -11,15 +11,19 @@
  */
 package com.ld.lucenex.service.impl;
 
-import com.ld.lucenex.service.BasisService;
+import java.io.IOException;
+import java.util.List;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.IntPoint;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopScoreDocCollector;
 
-import java.io.IOException;
-import java.util.List;
+import com.ld.lucenex.base.Page;
+import com.ld.lucenex.service.BasisService;
 
 /**
  * @ClassName: SimpleService
@@ -28,6 +32,26 @@ import java.util.List;
  * @date: 2018年7月24日 下午3:00:32
  */
 public class SimpleService extends BasisService {
+
+    /**
+     * 分页查询数据
+     * @param query
+     * @param page
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
+	public <T> Page<T> searchListToObject(Query query, Page<T> page) throws IOException {
+        int pageSize = page.getPageSize();
+        int pageNum = page.getPageNum();
+        TopScoreDocCollector collector = TopScoreDocCollector.create(pageNum + pageSize);
+        config.getSearcher().search(query, collector);
+        int totalHits = collector.getTotalHits();
+        ScoreDoc[] scoreDocs = collector.topDocs(pageNum, pageSize).scoreDocs;
+        page.setList(getObjects(scoreDocs));
+        page.setTotalRow(totalHits);
+        return page;
+    }
 
     /**
      * 查询集合  字段类型 为String/text
