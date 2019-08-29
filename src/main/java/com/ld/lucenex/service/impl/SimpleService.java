@@ -11,9 +11,9 @@
  */
 package com.ld.lucenex.service.impl;
 
-import java.io.IOException;
-import java.util.List;
-
+import com.ld.lucenex.base.Page;
+import com.ld.lucenex.config.IndexSource;
+import com.ld.lucenex.service.BasisService;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.IntPoint;
 import org.apache.lucene.index.Term;
@@ -22,8 +22,8 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopScoreDocCollector;
 
-import com.ld.lucenex.base.Page;
-import com.ld.lucenex.service.BasisService;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * @ClassName: SimpleService
@@ -44,8 +44,8 @@ public class SimpleService extends BasisService {
 	public <T> Page<T> searchListToObject(Query query, Page<T> page) throws IOException {
         int pageSize = page.getPageSize();
         int pageNum = page.getPageNum();
-        TopScoreDocCollector collector = TopScoreDocCollector.create(pageNum + pageSize);
-        config.getSearcher().search(query, collector);
+        TopScoreDocCollector collector = TopScoreDocCollector.create(pageNum , pageSize);
+        indexSource.getIndexSearcher().search(query, collector);
         int totalHits = collector.getTotalHits();
         ScoreDoc[] scoreDocs = collector.topDocs(pageNum, pageSize).scoreDocs;
         page.setList(getObjects(scoreDocs));

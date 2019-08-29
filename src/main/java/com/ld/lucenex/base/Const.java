@@ -22,4 +22,15 @@ public class Const {
     public final static boolean DEFAULT_HIGHLIGHT = true;
     public final static String[] DEFAULT_HTMLFORMATTER = new String[]{"<span>", "</span>"};
     public final static int DEFAULT_HighlightNum = 30;
+
+    /**
+     * 默认根据系统智能选择
+     * nio
+     *simp
+     * mmap
+     */
+    public static String FSD_TYPE="auto";
+
+    public final static String STRING_TEXTFIELD_STR = "str";
+    public final static String STRING_TEXTFIELD_TEXT = "text";
 }

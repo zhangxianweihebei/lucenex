@@ -1,40 +1,49 @@
 package com.ld.lucenex.service;
 
 import com.ld.lucenex.base.Page;
+import com.ld.lucenex.core.MyDocument;
+import com.ld.lucenex.util.CommonUtil;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.IntPoint;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopScoreDocCollector;
+import org.apache.lucene.search.*;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class BasisService implements Service {
+public class BasisService extends Service {
+
+    public BasisService(){
+        super();
+    }
+    public BasisService(String key){
+        super(key);
+    }
 
     /**
+     * 添加集合对象 支持 Java 实体类
      * @param list
+     * @return
      * @throws IOException
-     * @Title: addIndex
-     * @Description: 添加索引 支持 Object & map
-     * @return: void
      */
-    public void addIndex(List<?> list) throws IOException {
-        List<Document> document = toDocument(list);
-        addDocuments(document);
+    public long addObjects(List<Object> list) throws IOException {
+        Field[] declaredFields = indexSource.getDeclaredFields();
+        List<MyDocument> documents = list.stream().map(e -> new MyDocument(e, declaredFields)).collect(Collectors.toList());
+        return addDocuments(documents);
     }
-    
+
     /**
-     * 单个对象添加
-     * @param obj
+     * 添加对象 支持 Java 实体类
+     * @param object
+     * @return
      * @throws IOException
      */
-    public void addIndex(Object obj) throws IOException {
-        Document document = toDocument(obj);
-        addDocument(document);
+    public long addObject(Object object) throws IOException {
+        Field[] declaredFields = indexSource.getDeclaredFields();
+        return addDocument(new MyDocument(object, declaredFields));
     }
-
-
 
     public Document searchOneDoc(Query query) throws IOException {
         ScoreDoc[] scoreDocs = search(query, 10).scoreDocs;
@@ -71,8 +80,8 @@ public class BasisService implements Service {
     public Page<Document> searchList(Query query, Page<Document> page) throws IOException {
         int pageSize = page.getPageSize();
         int pageNum = page.getPageNum();
-        TopScoreDocCollector collector = TopScoreDocCollector.create(pageNum + pageSize);
-        config.getSearcher().search(query, collector);
+        TopScoreDocCollector collector = TopScoreDocCollector.create(pageNum , pageSize);
+        indexSource.getIndexSearcher().search(query, collector);
         int totalHits = collector.getTotalHits();
         ScoreDoc[] scoreDocs = collector.topDocs(pageNum, pageSize).scoreDocs;
         page.setList(getDocuments(scoreDocs));
@@ -90,5 +99,64 @@ public class BasisService implements Service {
     public List<Document> searchTotal() throws IOException {
         Query query = IntPoint.newExactQuery("lucenex_total", 0);
         return searchList(query, Integer.MAX_VALUE);
+    }
+
+    /**
+     * 统计数量
+     * @param query
+     * @return
+     * @throws IOException
+     */
+    int count(Query query) throws IOException {
+        return indexSource.getIndexSearcher().count(query);
+    }
+
+    /**
+     * 获取列表
+     * @param scoreDocs
+     * @return
+     * @throws IOException
+     */
+    List<Document> getDocuments(ScoreDoc[] scoreDocs) throws IOException {
+        List<Document> documents = new ArrayList(scoreDocs.length);
+        for (int i = 0, size = scoreDocs.length; i < size; i++) {
+            documents.add(getDocument(scoreDocs[i].doc));
+        }
+        return documents;
+    }
+
+    /**
+     * 获取列表
+     * @param scoreDocs
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
+    public <T> List<T> getObjects(ScoreDoc[] scoreDocs) throws IOException {
+        List<T> documents = new ArrayList(scoreDocs.length);
+        Class<T> clazz = indexSource.getDefaultClass();
+        for (int i = 0, size = scoreDocs.length; i < size; i++) {
+            Document document = getDocument(scoreDocs[i].doc);
+            documents.add(CommonUtil.getObject(document,clazz));
+        }
+        return documents;
+    }
+
+    /**
+     * 根据docId获取
+     * @param docID
+     * @return
+     * @throws IOException
+     */
+    Document getDocument(int docID) throws IOException {
+        return indexSource.getIndexSearcher().doc(docID);
+    }
+
+    TopDocs search(Query query, int n) throws IOException {
+        return indexSource.getIndexSearcher().search(query, n);
+    }
+
+    TopFieldDocs search(Query query, int n, Sort sort) {
+        return search(query, n, sort);
     }
 }

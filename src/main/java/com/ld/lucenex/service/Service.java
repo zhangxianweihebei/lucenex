@@ -11,150 +11,126 @@
  */
 package com.ld.lucenex.service;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.ld.lucenex.config.IndexSource;
+import com.ld.lucenex.core.LuceneX;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.TopFieldDocs;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.ld.lucenex.base.ToDocument;
-import com.ld.lucenex.config.SourceConfig;
-import com.ld.lucenex.core.ManySource;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * @ClassName: Service
  * @Description: TODO
  * @author: Myzhang
- * @param <T>
  * @date: 2018年5月23日 下午6:46:22
  */
-interface Service<T> {
+public class Service {
 
-    SourceConfig config = ManySource.getDataSource();
-    Logger logger = LoggerFactory.getLogger(Service.class);
+    public IndexSource indexSource;
 
-    default long addDocuments(Iterable<? extends Iterable<? extends IndexableField>> docs) throws IOException {
-        long addDocuments = config.getWriter().addDocuments(docs);
+    public Service(){
+        indexSource = LuceneX.getIndexSource(null);
+    }
+
+    public Service(String sourceKey){
+        indexSource = LuceneX.getIndexSource(sourceKey);
+    }
+
+    /**
+     * 添加 docs
+     * @param docs
+     * @return
+     * @throws IOException
+     */
+    public long addDocuments(Iterable<? extends Iterable<? extends IndexableField>> docs) throws IOException {
+        long addDocuments = indexSource.getIndexWriter().addDocuments(docs);
+        indexSource.updateIndexSource();
         return addDocuments;
     }
 
     /**
+     * 添加 doc
      * @param doc
      * @return
      * @throws IOException
-     * @Title: addDocument
-     * @Description: TODO
-     * @return: long
      */
-    default long addDocument(Iterable<? extends IndexableField> doc) throws IOException {
-        long addDocument = config.getWriter().addDocument(doc);
-        return addDocument;
+    public long addDocument(Iterable<? extends IndexableField> doc) throws IOException {
+        long document = indexSource.getIndexWriter().addDocument(doc);
+        indexSource.updateIndexSource();
+        return document;
     }
 
     /**
-     * @param query
+     * 根据 term 更新
+     * @param documents
+     * @param term
      * @return
      * @throws IOException
-     * @Title: count
-     * @Description: 计算与给定查询匹配的文档数量
-     * @return: int
      */
-    default int count(Query query) throws IOException {
-        return config.getSearcher().count(query);
-    }
-
-    default List<Document> getDocuments(ScoreDoc[] scoreDocs) throws IOException {
-        List<Document> documents = new ArrayList(scoreDocs.length);
-        for (int i = 0, size = scoreDocs.length; i < size; i++) {
-            documents.add(getDocument(scoreDocs[i].doc));
-        }
-        return documents;
-    }
-    
-    default List<T> getObjects(ScoreDoc[] scoreDocs) throws IOException {
-        List<T> documents = new ArrayList(scoreDocs.length);
-        Class<?> defaultClass = config.getDefaultClass();
-        for (int i = 0, size = scoreDocs.length; i < size; i++) {
-            documents.add(ToDocument.documentToObject(defaultClass, getDocument(scoreDocs[i].doc)));
-        }
-        return documents;
+    public long updateDocuments(List<Document> documents, Term term) throws IOException {
+        long l = indexSource.getIndexWriter().updateDocuments(term, documents);
+        indexSource.updateIndexSource();
+        return l;
     }
 
     /**
-     * @param docID
+     * 根据 term 更新
+     * @param document
+     * @param term
      * @return
      * @throws IOException
-     * @Title: getDocument
-     * @Description: 根据文档ID 获取一个文档
-     * @return: Document
      */
-    default Document getDocument(int docID) throws IOException {
-        return config.getSearcher().doc(docID);
-    }
-
-    default TopDocs search(Query query, int n) throws IOException {
-        return config.getSearcher().search(query, n);
-    }
-
-    default TopFieldDocs search(Query query, int n, Sort sort) {
-        return search(query, n, sort);
-    }
-
-    default long deleteAll() throws IOException {
-        long l = config.getWriter().deleteAll();
+    public long updateDocument(Document document, Term term) throws IOException {
+        long l = indexSource.getIndexWriter().updateDocument(term, document);
+        indexSource.updateIndexSource();
         return l;
     }
 
-    default long deleteDocuments(Query... queries) throws IOException {
-        long l = config.getWriter().deleteDocuments(queries);
-        return l;
-    }
 
-    default long deleteDocuments(Term... terms) throws IOException {
-        long l = config.getWriter().deleteDocuments(terms);
-        return l;
-    }
-
-    default void deleteUnusedFiles() throws IOException {
-        config.getWriter().deleteUnusedFiles();
-    }
-
-    default long updateIndex(List<Document> list, Term term) throws IOException {
-        long l = config.getWriter().updateDocuments(term, list);
-        return l;
-    }
-
-    default List<Document> toDocument(List<?> list) {
-        return ToDocument.getDocuments(list, config.getDefaultClass());
-    }
-    
-    default Document toDocument(Object object) {
-    	Field[] fields = config.getDefaultClass().getDeclaredFields();
-        return ToDocument.getDocument(object, fields);
+    /**
+     * 清空索引
+     * @return
+     * @throws IOException
+     */
+    public long deleteAll() throws IOException {
+        long deleteAll = indexSource.getIndexWriter().deleteAll();
+        indexSource.updateIndexSource();
+        return deleteAll;
     }
 
     /**
-     * @Title: goBack
-     * @Description: 回退数据 前提处于非开发模式
-     * @return: void
+     * 根据 query 删除
+     * @param queries
+     * @return
+     * @throws IOException
      */
-    default void goBack() {
-        try {
-            config.getWriter().rollback();
-            config.setWriter(config.getWriter());
-            config.restartReader();
-        } catch (IOException e) {
-            logger.error("回退索引error", e);
-        }
+    public long deleteDocuments(Query... queries) throws IOException {
+        long l = indexSource.getIndexWriter().deleteDocuments(queries);
+        indexSource.updateIndexSource();
+        return l;
+    }
+
+    /**
+     * 根据 term 删除
+     * @param terms
+     * @return
+     * @throws IOException
+     */
+    public long deleteDocuments(Term... terms) throws IOException {
+        long l = indexSource.getIndexWriter().deleteDocuments(terms);
+        indexSource.updateIndexSource();
+        return l;
+    }
+
+    /**
+     * 删除未使用的索引
+     * @throws IOException
+     */
+    public void deleteUnusedFiles() throws IOException {
+        indexSource.getIndexWriter().deleteUnusedFiles();
+        indexSource.updateIndexSource();
     }
 }

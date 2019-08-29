@@ -1,8 +1,8 @@
 package com.ld.lucenex.demo;
 
-import com.ld.lucenex.core.LdService;
 import com.ld.lucenex.core.LuceneX;
 import com.ld.lucenex.service.BasisService;
+import com.ld.lucenex.service.impl.ServiceFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.IntPoint;
 import org.apache.lucene.index.Term;
@@ -38,42 +38,42 @@ public class SimpleExample {
      */
     @BeforeEach
     public void init() {
-        LuceneX.start(DemoConfig.class);
+        try {
+            LuceneX luceneX = new LuceneX(DemoConfig.class);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
     }
 
 
     @Test
     public void deleteAll() throws IOException {
-        BasisService service = LdService.newInstance(BasisService.class,"123");
-        service.deleteAll();
+        BasisService basisService = ServiceFactory.getService(BasisService.class);
+        basisService.deleteAll();
     }
 
     @Test
     public void save() throws IOException {
-        BasisService service = LdService.newInstance(BasisService.class,"123");
+        BasisService service = ServiceFactory.getService(BasisService.class,"123");
         Empty empty = new Empty();
         empty.setId(1);
         empty.setName("张三");
         empty.setText("我是 一个 正儿八经 的 小男孩");
-
-        Empty empty2 = new Empty();
-        empty2.setId(2);
-        empty2.setName("zhang san");
-        empty2.setText("a b c d e f g");
-        service.addIndex(empty);
-        service.addIndex(empty2);
+        service.addObject(empty);
     }
 
     @Test
     public void searchOneDoc() throws IOException {
-        BasisService service = LdService.newInstance(BasisService.class,"123");
+        BasisService service =  ServiceFactory.getService(BasisService.class,"123");
         Document doc = service.searchOneDoc(IntPoint.newExactQuery("id",1));
         System.out.println(doc);
     }
 
     @Test
     public void searchTotal() throws IOException {
-        BasisService service = LdService.newInstance(BasisService.class,"123");
+        BasisService service =  ServiceFactory.getService(BasisService.class,"123");
         List<Document> doc = service.searchTotal();
         doc.forEach(e->System.out.println(e));
     }
@@ -84,7 +84,7 @@ public class SimpleExample {
      */
     @Test
     public void searchListPrefixQuery() throws IOException {
-        BasisService service = LdService.newInstance(BasisService.class,"123");
+        BasisService service =  ServiceFactory.getService(BasisService.class,"123");
         PrefixQuery prefixQuery = new PrefixQuery(new Term("name", "张"));
         List<Document> docs = service.searchList(prefixQuery,10);
         docs.forEach(e->{
@@ -97,7 +97,7 @@ public class SimpleExample {
      */
     @Test
     public void searchListWildcardQuery() throws IOException {
-        BasisService service = LdService.newInstance(BasisService.class,"123");
+        BasisService service =  ServiceFactory.getService(BasisService.class,"123");
         WildcardQuery wildcardQuery = new WildcardQuery(new Term("name", "?三"));
         List<Document> docs = service.searchList(wildcardQuery,10);
         docs.forEach(e->{
@@ -110,7 +110,7 @@ public class SimpleExample {
      */
     @Test
     public void searchListFuzzyQuery() throws IOException {
-        BasisService service = LdService.newInstance(BasisService.class,"123");
+        BasisService service =  ServiceFactory.getService(BasisService.class,"123");
         FuzzyQuery fuzzyQuery = new FuzzyQuery(new Term("name", "张二"));
         List<Document> docs = service.searchList(fuzzyQuery,10);
         docs.forEach(e->{
@@ -123,7 +123,7 @@ public class SimpleExample {
      */
     @Test
     public void searchListTermQuery() throws IOException {
-        BasisService service = LdService.newInstance(BasisService.class,"123");
+        BasisService service =  ServiceFactory.getService(BasisService.class,"123");
         TermQuery termQuery = new TermQuery(new Term("name", "张三"));
         List<Document> docs = service.searchList(termQuery,10);
         docs.forEach(e->{
@@ -140,7 +140,7 @@ public class SimpleExample {
      */
     @Test
     public void searchListBooleanQuery() throws IOException {
-        BasisService service = LdService.newInstance(BasisService.class,"123");
+        BasisService service =  ServiceFactory.getService(BasisService.class,"123");
         TermQuery termQuery = new TermQuery(new Term("name", "张三"));
         BooleanQuery booleanQuery = new BooleanQuery.Builder()
                 .add(termQuery, BooleanClause.Occur.MUST)
@@ -157,7 +157,7 @@ public class SimpleExample {
      */
     @Test
     public void searchListPhraseQuery() throws IOException {
-        BasisService service = LdService.newInstance(BasisService.class,"123");
+        BasisService service =  ServiceFactory.getService(BasisService.class,"123");
         PhraseQuery phraseQuery = new PhraseQuery.Builder()
                 .setSlop(1)
                 .add(new Term("text", "woshi"))
@@ -174,7 +174,7 @@ public class SimpleExample {
      */
     @Test
     public void searchListRegexpQuery() throws IOException {
-        BasisService service = LdService.newInstance(BasisService.class,"123");
+        BasisService service =  ServiceFactory.getService(BasisService.class,"123");
         RegexpQuery regexpQuery = new RegexpQuery(new Term("name","*三"));
         regexpQuery.getRegexp();
         List<Document> docs = service.searchList(regexpQuery,10);

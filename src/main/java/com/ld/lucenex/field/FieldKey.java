@@ -18,7 +18,7 @@ public @interface FieldKey {
      *
      * @return
      */
-    LDType type() default LDType.IntPoint;
+    LDType type() default LDType.StringField;
 
     /**
      * 排序方式

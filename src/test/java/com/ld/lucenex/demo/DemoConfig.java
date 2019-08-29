@@ -8,14 +8,10 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 
 public class DemoConfig extends LuceneXConfig {
 
-    /**
-     * 基础配置
-     * @param me
-     */
+
     @Override
     public void configConstant(Constants me) {
-        me.setDefaultDisk("/Users/a1/");
-        me.setDefaultClass(Empty.class);
+
     }
 
     /**
@@ -24,7 +20,7 @@ public class DemoConfig extends LuceneXConfig {
      */
     @Override
     public void configLuceneX(BaseConfig me) {
-        me.add("123");
-        me.add("456");
+        me.add("d:/","123",false,Empty.class);
+        me.add("d:/","456",false,Empty.class);
     }
 }

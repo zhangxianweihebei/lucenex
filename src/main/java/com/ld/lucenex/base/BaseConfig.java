@@ -11,25 +11,18 @@
  */
 package com.ld.lucenex.base;
 
+import com.ld.lucenex.config.IndexSource;
 import com.ld.lucenex.config.LuceneXConfig;
-import com.ld.lucenex.config.SourceConfig;
 import com.ld.lucenex.core.LuceneX;
-import com.ld.lucenex.core.ManySource;
-import com.ld.lucenex.interce.impl.HIGIterface;
-import com.ld.lucenex.interce.impl.NRTIterface;
+import com.ld.lucenex.util.CommonUtil;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.NIOFSDirectory;
-import org.apache.lucene.store.NoLockFactory;
+import org.apache.lucene.search.IndexSearcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
 
 /**
  * @ClassName: BaseConfig
@@ -45,11 +38,6 @@ public class BaseConfig implements InitConfig {
     private static final BaseConfig baseConfig = new BaseConfig();
 
     public static void configLuceneX(LuceneXConfig config) {
-        Runtime.getRuntime().addShutdownHook(new Thread(()->{
-            LuceneX.closeAll();
-        }));
-        constants.addInterface(0, new NRTIterface());
-        constants.addInterface(1, new HIGIterface());
         config.configConstant(constants);
         config.configLuceneX(baseConfig);
     }
@@ -61,7 +49,6 @@ public class BaseConfig implements InitConfig {
     public void createSource(String indexPath, String dataKey, boolean highlight, PerFieldAnalyzerWrapper analyzer,
                              Class<?> clas) {
         try {
-            SourceConfig config = new SourceConfig();
             if (indexPath == null) {
                 if (constants.getDefaultDisk() != null) {
                     indexPath = constants.getDefaultDisk();
@@ -90,21 +77,13 @@ public class BaseConfig implements InitConfig {
                     clas = constants.getDefaultClass();
                 }
             }
-            config.setHighlight(highlight);
-            config.setDefaultClass(clas);
-            config.setAnalyzer(analyzer);
-            setWriter(config, indexDirectory.toPath());
-            config.restartReader();
-            ManySource.putDataSource(dataKey, config);
+            IndexWriter indexWriter = CommonUtil.createIndexWriter(path, analyzer);
+            IndexSearcher indexSearcher = CommonUtil.createIndexSearcher(indexWriter);
+            IndexSource indexSource = new IndexSource(path,highlight,indexWriter,indexSearcher,analyzer,clas);
+            LuceneX.addIndexSource(dataKey,indexSource);
         } catch (Exception e) {
             logger.error("BaseConfig.createSource error", e);
         }
-    }
-
-    private void setWriter(SourceConfig config, Path path) throws IOException {
-        FSDirectory directory = NIOFSDirectory.open(path, NoLockFactory.INSTANCE);
-        IndexWriter writer = new IndexWriter(directory, new IndexWriterConfig(config.getAnalyzer()));
-        config.setWriter(writer);
     }
 
     @Override
