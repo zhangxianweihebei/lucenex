@@ -34,52 +34,32 @@ public class BaseConfig implements InitConfig {
 
     private static Logger logger = LoggerFactory.getLogger(BaseConfig.class);
 
-    private static final Constants constants = new Constants();
-    private static final BaseConfig baseConfig = new BaseConfig();
-
+    static final BaseConfig baseConfig = new BaseConfig();
     public static void configLuceneX(LuceneXConfig config) {
-        config.configConstant(constants);
         config.configLuceneX(baseConfig);
     }
 
-    public static Constants baseConfig() {
-        return constants;
-    }
-
-    public void createSource(String indexPath, String dataKey, boolean highlight, PerFieldAnalyzerWrapper analyzer,
-                             Class<?> clas) {
+    public <T> void createSource(String indexPath, String dataKey, boolean highlight, PerFieldAnalyzerWrapper analyzer, Class<T> clazz) {
+        if (indexPath == null || dataKey == null){
+            throw new NullPointerException("There is no default disk");
+        }
+        File file = new File(String.join("", indexPath, dataKey));
+        if (!file.exists()){
+            boolean mkdirs = file.mkdirs();
+            if (!mkdirs){
+                throw new NullPointerException("no indexPath or dataKey :{}"+file.getPath());
+            }
+        }
+        if (clazz == null){
+            throw new NullPointerException("No default class");
+        }
+        if (analyzer == null){
+            analyzer = new PerFieldAnalyzerWrapper(new StandardAnalyzer());
+        }
         try {
-            if (indexPath == null) {
-                if (constants.getDefaultDisk() != null) {
-                    indexPath = constants.getDefaultDisk();
-                } else {
-                    throw new NullPointerException("There is no default disk");
-                }
-            }
-            String path = indexPath + dataKey;
-            File indexDirectory = new File(path);
-            if (!indexDirectory.exists()) {
-                indexDirectory.mkdirs();
-            }
-            if (!indexDirectory.isDirectory()) {
-                throw new Exception("Not a valid directory");
-            }
-            if (analyzer == null) {
-                analyzer = new PerFieldAnalyzerWrapper(new StandardAnalyzer());
-            }
-            if (clas == null && constants.getDefaultClass() == null) {
-                throw new NullPointerException("No default class");
-            }
-            if (clas == null) {
-                if (constants.getDefaultClass() == null) {
-                    throw new NullPointerException("No default class");
-                } else {
-                    clas = constants.getDefaultClass();
-                }
-            }
-            IndexWriter indexWriter = CommonUtil.createIndexWriter(path, analyzer);
+            IndexWriter indexWriter = CommonUtil.createIndexWriter(file.getPath(), analyzer);
             IndexSearcher indexSearcher = CommonUtil.createIndexSearcher(indexWriter);
-            IndexSource indexSource = new IndexSource(path,highlight,indexWriter,indexSearcher,analyzer,clas);
+            IndexSource indexSource = new IndexSource(file.getPath(),highlight,indexWriter,indexSearcher,analyzer,clazz);
             LuceneX.addIndexSource(dataKey,indexSource);
         } catch (Exception e) {
             logger.error("BaseConfig.createSource error", e);
@@ -87,31 +67,9 @@ public class BaseConfig implements InitConfig {
     }
 
     @Override
-    public void add(String dataKey) {
-        createSource(null, dataKey, constants.isHighlight(), null, null);
-    }
-
-    @Override
-    public void add(String dataKey, Class<?> clas) {
-        createSource(null, dataKey, constants.isHighlight(), null, clas);
-    }
-
-    @Override
-    public void add(String indexPath, String dataKey) {
-        createSource(indexPath, dataKey, constants.isHighlight(), null, null);
-    }
-
-    @Override
     public void add(String indexPath, String dataKey, Class<?> clas) {
         // TODO 自动生成的方法存根
-        createSource(indexPath, dataKey, constants.isHighlight(), null, clas);
-
-    }
-
-    @Override
-    public void add(String indexPath, String dataKey, boolean highlight) {
-        // TODO 自动生成的方法存根
-        createSource(indexPath, dataKey, highlight, null, null);
+        createSource(indexPath, dataKey, false, null, clas);
 
     }
 
@@ -119,12 +77,6 @@ public class BaseConfig implements InitConfig {
     public void add(String indexPath, String dataKey, boolean highlight, Class<?> clas) {
         // TODO 自动生成的方法存根
         createSource(indexPath, dataKey, highlight, null, clas);
-
-    }
-
-    @Override
-    public void add(String indexPath, String dataKey, boolean highlight, PerFieldAnalyzerWrapper analyzer) {
-        createSource(indexPath, dataKey, highlight, analyzer, null);
 
     }
 
@@ -137,21 +89,7 @@ public class BaseConfig implements InitConfig {
 }
 
 interface InitConfig {
-
-    void add(String dataKey);
-
-    void add(String dataKey, Class<?> clas);
-
-    void add(String indexPath, String dataKey);
-
     void add(String indexPath, String dataKey, Class<?> clas);
-
-    void add(String indexPath, String dataKey, boolean highlight);
-
     void add(String indexPath, String dataKey, boolean highlight, Class<?> clas);
-
-    void add(String indexPath, String dataKey, boolean highlight, PerFieldAnalyzerWrapper analyzer);
-
     void add(String indexPath, String dataKey, boolean highlight, PerFieldAnalyzerWrapper analyzer, Class<?> clas);
-
 }

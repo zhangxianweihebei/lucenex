@@ -13,6 +13,7 @@ import org.apache.lucene.store.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,11 +26,17 @@ public class CommonUtil {
             String value = e.stringValue();
             jsonObject.put(name,value);
         });
-        return jsonObject.toJavaObject(clazz);
+        T t = jsonObject.toJavaObject(clazz);
+        return t;
     }
 
     public static <T> List<T> getObjects(List<Document> documents, Class<T> clazz){
-        return documents.stream().map(e->getObject(e,clazz)).collect(Collectors.toList());
+        List<T> list = new ArrayList<>(documents.size());
+        for (int i=0,size=documents.size();i<size;i++){
+            Document document = documents.get(i);
+            list.add(getObject(document,clazz));
+        }
+        return list;
     }
 
     /**
@@ -61,6 +68,7 @@ public class CommonUtil {
                 break;
         }
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
+        indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
         IndexWriter indexWriter = new IndexWriter(fsDirectory, indexWriterConfig);
         return indexWriter;
     }

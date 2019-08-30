@@ -27,13 +27,9 @@ import java.util.List;
  * @author: Myzhang
  * @date: 2018年5月23日 下午6:46:22
  */
-public class Service {
+public abstract class Service {
 
     public IndexSource indexSource;
-
-    public Service(){
-        indexSource = LuceneX.getIndexSource(null);
-    }
 
     public Service(String sourceKey){
         indexSource = LuceneX.getIndexSource(sourceKey);

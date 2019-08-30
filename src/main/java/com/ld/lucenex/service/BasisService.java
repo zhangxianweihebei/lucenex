@@ -13,13 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BasisService extends Service {
+public class BasisService<T> extends Service {
 
-    public BasisService(){
-        super();
-    }
-    public BasisService(String key){
-        super(key);
+    public BasisService(String sourceKey) {
+        super(sourceKey);
     }
 
     /**
@@ -28,8 +25,8 @@ public class BasisService extends Service {
      * @return
      * @throws IOException
      */
-    public long addObjects(List<Object> list) throws IOException {
-        Field[] declaredFields = indexSource.getDeclaredFields();
+    public long addObjects(List<?> list) throws IOException {
+        List<Field> declaredFields = indexSource.getDeclaredFields();
         List<MyDocument> documents = list.stream().map(e -> new MyDocument(e, declaredFields)).collect(Collectors.toList());
         return addDocuments(documents);
     }
@@ -41,10 +38,15 @@ public class BasisService extends Service {
      * @throws IOException
      */
     public long addObject(Object object) throws IOException {
-        Field[] declaredFields = indexSource.getDeclaredFields();
-        return addDocument(new MyDocument(object, declaredFields));
+        return addDocument(new MyDocument(object, indexSource.getDeclaredFields()));
     }
 
+    /**
+     * 查询单个
+     * @param query
+     * @return
+     * @throws IOException
+     */
     public Document searchOneDoc(Query query) throws IOException {
         ScoreDoc[] scoreDocs = search(query, 10).scoreDocs;
         if(scoreDocs.length == 0) return null;
@@ -55,17 +57,55 @@ public class BasisService extends Service {
     }
 
     /**
+     * 查询单个
      * @param query
-     * @param n
+     * @param <T>
      * @return
      * @throws IOException
-     * @Title: searchList
-     * @Description: 简单query 带长度 n
-     * @return: List<Document>
      */
-    public List<Document> searchList(Query query, int n) throws IOException {
-        ScoreDoc[] scoreDocs = search(query, n).scoreDocs;
+    public T searchOne(Query query) throws IOException {
+        Document document = searchOneDoc(query);
+        if (document == null){
+            return null;
+        }
+        Class<T> defaultClass = indexSource.getDefaultClass();
+        return CommonUtil.getObject(document, defaultClass);
+    }
+
+    /**
+     * 根据 Query 查询集合
+     * @param query
+     * @param num
+     * @return List<Document>
+     * @throws IOException
+     */
+    public List<Document> searchListDoc(Query query, int num) throws IOException {
+        ScoreDoc[] scoreDocs = search(query, num).scoreDocs;
         return getDocuments(scoreDocs);
+    }
+
+    /**
+     * 根据 Query 查询集合
+     * @param query
+     * @param num
+     * @param <T>
+     * @return List<T>
+     * @throws IOException
+     */
+    public <T> List<T> searchList(Query query, int num) throws IOException {
+        List<Document> documents = searchListDoc(query, num);
+        Class<T> defaultClass = indexSource.getDefaultClass();
+        return CommonUtil.getObjects(documents,defaultClass);
+    }
+    /**
+     * 根据 Query 查询集合
+     * @param query
+     * @param <T>
+     * @return List<T>
+     * @throws IOException
+     */
+    public <T> List<T> searchList(Query query) throws IOException {
+        return searchList(query,Integer.MAX_VALUE);
     }
 
     /**
@@ -77,7 +117,7 @@ public class BasisService extends Service {
      * @Description: 简单分页查询
      * @return: Page<Document>
      */
-    public Page<Document> searchList(Query query, Page<Document> page) throws IOException {
+    public Page<Document> searchListDoc(Query query, Page<Document> page) throws IOException {
         int pageSize = page.getPageSize();
         int pageNum = page.getPageNum();
         TopScoreDocCollector collector = TopScoreDocCollector.create(pageNum , pageSize);
@@ -88,17 +128,51 @@ public class BasisService extends Service {
         page.setTotalRow(totalHits);
         return page;
     }
+    /**
+     * @param query
+     * @param page  = Page.newPage(1, 10)
+     * @return
+     * @throws IOException
+     * @Title: searchList
+     * @Description: 简单分页查询
+     * @return: Page<Document>
+     */
+    public <T> Page<T> searchList(Query query, Page<T> page) throws IOException {
+        int pageSize = page.getPageSize();
+        int pageNum = page.getPageNum();
+        TopScoreDocCollector collector = TopScoreDocCollector.create(pageNum+pageSize,Integer.MAX_VALUE);
+        indexSource.getIndexSearcher().search(query, collector);
+        int totalHits = collector.getTotalHits();
+        ScoreDoc[] scoreDocs = collector.topDocs(pageNum, pageSize).scoreDocs;
+        List<Document> documentPageList = getDocuments(scoreDocs);
+        Class<T> defaultClass = indexSource.getDefaultClass();
+        page.setList(CommonUtil.getObjects(documentPageList,defaultClass));
+        page.setTotalRow(totalHits);
+        return page;
+    }
 
     /**
      * @return
      * @throws IOException
      * @Title: searchTotal
-     * @Description: 查询所有文档 必须使用 addIndex 添加
+     * @Description: 查询所有文档 必须使用 MyDocument 添加
      * @return: List<Document>
      */
-    public List<Document> searchTotal() throws IOException {
+    public List<Document> searchTotalDoc() throws IOException {
         Query query = IntPoint.newExactQuery("lucenex_total", 0);
-        return searchList(query, Integer.MAX_VALUE);
+        return searchListDoc(query, Integer.MAX_VALUE);
+    }
+    /**
+     * @return
+     * @throws IOException
+     * @Title: searchTotal
+     * @Description: 查询所有文档 必须使用 MyDocument 添加
+     * @return: List<T>
+     */
+    public List<T> searchTotal() throws IOException {
+        List<Document> documents = searchTotalDoc();
+        Class<T> defaultClass = indexSource.getDefaultClass();
+        return CommonUtil.getObjects(documents,defaultClass);
     }
 
     /**
@@ -107,7 +181,7 @@ public class BasisService extends Service {
      * @return
      * @throws IOException
      */
-    int count(Query query) throws IOException {
+    public int count(Query query) throws IOException {
         return indexSource.getIndexSearcher().count(query);
     }
 
@@ -121,23 +195,6 @@ public class BasisService extends Service {
         List<Document> documents = new ArrayList(scoreDocs.length);
         for (int i = 0, size = scoreDocs.length; i < size; i++) {
             documents.add(getDocument(scoreDocs[i].doc));
-        }
-        return documents;
-    }
-
-    /**
-     * 获取列表
-     * @param scoreDocs
-     * @param <T>
-     * @return
-     * @throws IOException
-     */
-    public <T> List<T> getObjects(ScoreDoc[] scoreDocs) throws IOException {
-        List<T> documents = new ArrayList(scoreDocs.length);
-        Class<T> clazz = indexSource.getDefaultClass();
-        for (int i = 0, size = scoreDocs.length; i < size; i++) {
-            Document document = getDocument(scoreDocs[i].doc);
-            documents.add(CommonUtil.getObject(document,clazz));
         }
         return documents;
     }
@@ -159,4 +216,5 @@ public class BasisService extends Service {
     TopFieldDocs search(Query query, int n, Sort sort) {
         return search(query, n, sort);
     }
+
 }

@@ -15,18 +15,22 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.ld.lucenex.core.LuceneX;
+import com.ld.lucenex.field.FieldKey;
 import com.ld.lucenex.util.CommonUtil;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
-import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.highlight.Highlighter;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.nio.ch.FileKey;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
@@ -44,7 +48,9 @@ public class IndexSource<T> {
     private PerFieldAnalyzerWrapper analyzer;
     private Class<T> defaultClass;
     private Highlighter highlighter;
-    Field[] declaredFields;
+    List<Field> declaredFields;
+
+    private volatile boolean lock = false;
 
     private Logger logger = LoggerFactory.getLogger(IndexSource.class);
 
@@ -69,7 +75,15 @@ public class IndexSource<T> {
         this.indexSearcher = searcher;
         this.analyzer = analyzer;
         this.defaultClass = defaultClass;
-        this.declaredFields = defaultClass.getDeclaredFields();
+        Field[] declaredFields = defaultClass.getDeclaredFields();
+        List<Field> fields = new ArrayList<>();
+        for (Field field:declaredFields){
+            field.setAccessible(true);
+            if (field.isAnnotationPresent(FieldKey.class)){
+                fields.add(field);
+            }
+        }
+        this.declaredFields = fields;
     }
 
     public void updateIndexSource(){
@@ -83,24 +97,21 @@ public class IndexSource<T> {
                 logger.error("Near Real-Time updateIndexSource error",e);
             }finally {
                 ListenableFuture<Void> listenableFuture = LuceneX.getExecutorService().submit((Callable<Void>) () -> {
-                    this.indexWriter.flush();
-                    this.indexWriter.commit();
-                    logger.info("source commit ok");
+                    logger.info("source commit ...");
+                    indexWriter.flush();
+                    indexWriter.commit();
                     return null;
                 });
                 Futures.addCallback(listenableFuture, new FutureCallback<Void>() {
                     @Override
                     public void onSuccess(@Nullable Void aVoid) {
-                        //进实时转换
-                        try {
-                            indexSearcher = CommonUtil.createIndexSearcher(indexWriter);
-                        } catch (IOException e) {
-                            logger.error("Near Real-Time onSuccess error",e);
-                        }
+                        setLock(false);
+                        logger.info("source commit success");
                     }
                     @Override
                     public void onFailure(Throwable throwable) {
-                        logger.error("Near Real-Time onFailure error",throwable);
+                        setLock(false);
+                        logger.error("{} - source commit error",indexPath,throwable);
                     }
                 },LuceneX.getExecutorService());
             }
@@ -135,7 +146,15 @@ public class IndexSource<T> {
         return highlighter;
     }
 
-    public Field[] getDeclaredFields() {
+    public List<Field> getDeclaredFields() {
         return declaredFields;
+    }
+
+    public boolean isLock() {
+        return lock;
+    }
+
+    public void setLock(boolean lock) {
+        this.lock = lock;
     }
 }

@@ -1,16 +1,21 @@
 package com.ld.lucenex.demo;
 
+import com.ld.lucenex.base.BaseConfig;
+import com.ld.lucenex.config.LuceneXConfig;
 import com.ld.lucenex.core.LuceneX;
 import com.ld.lucenex.service.BasisService;
-import com.ld.lucenex.service.impl.ServiceFactory;
+import com.ld.lucenex.service.ServiceFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.IntPoint;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,16 +38,45 @@ import java.util.List;
  */
 public class SimpleExample {
 
+    private Logger logger = LoggerFactory.getLogger(SimpleExample.class);
+
     /**
      * start
      */
     @BeforeEach
     public void init() {
+        LuceneX luceneX = new LuceneX(new LuceneXConfig() {
+            @Override
+            public void configLuceneX(BaseConfig me) {
+                me.add("d:/","123",Empty.class);
+            }
+        });
+    }
+
+    /**
+     * 测试近实时
+     * 插入10万条数据，立马调用查询 并查出结果
+     */
+    @Test
+    public void testNearRealTime(){
+        List<Empty> empties = new ArrayList<>(100000);
+        for (int i =0;i<1000000;i++){
+            Empty empty = new Empty();
+            empty.setId(i);
+            empty.setName("张三");
+            empty.setText("我是 一个 正儿八经 的 小男孩");
+            empties.add(empty);
+        }
         try {
-            LuceneX luceneX = new LuceneX(DemoConfig.class);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
+            long time = System.currentTimeMillis();
+            ServiceFactory.getService(BasisService.class,"123").addObjects(empties);
+            System.out.println(System.currentTimeMillis()-time);
+            time = System.currentTimeMillis();
+            System.out.println(ServiceFactory.getService(BasisService.class,"123").searchTotal().size());
+            System.out.println(System.currentTimeMillis()-time);
+            ServiceFactory.getService(BasisService.class,"123").deleteAll();
+            logger.info(ServiceFactory.getService(BasisService.class,"123").searchTotal().size()+"");
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -88,7 +122,7 @@ public class SimpleExample {
         PrefixQuery prefixQuery = new PrefixQuery(new Term("name", "张"));
         List<Document> docs = service.searchList(prefixQuery,10);
         docs.forEach(e->{
-           System.out.println(e);
+            System.out.println(e);
         });
     }
     /**
@@ -101,7 +135,7 @@ public class SimpleExample {
         WildcardQuery wildcardQuery = new WildcardQuery(new Term("name", "?三"));
         List<Document> docs = service.searchList(wildcardQuery,10);
         docs.forEach(e->{
-           System.out.println(e);
+            System.out.println(e);
         });
     }
     /**
@@ -114,7 +148,7 @@ public class SimpleExample {
         FuzzyQuery fuzzyQuery = new FuzzyQuery(new Term("name", "张二"));
         List<Document> docs = service.searchList(fuzzyQuery,10);
         docs.forEach(e->{
-           System.out.println(e);
+            System.out.println(e);
         });
     }
     /**
@@ -127,7 +161,7 @@ public class SimpleExample {
         TermQuery termQuery = new TermQuery(new Term("name", "张三"));
         List<Document> docs = service.searchList(termQuery,10);
         docs.forEach(e->{
-           System.out.println(e);
+            System.out.println(e);
         });
     }
     /**
@@ -148,7 +182,7 @@ public class SimpleExample {
                 .build();
         List<Document> docs = service.searchList(booleanQuery,10);
         docs.forEach(e->{
-           System.out.println(e);
+            System.out.println(e);
         });
     }
     /**
@@ -165,7 +199,7 @@ public class SimpleExample {
                 .build();
         List<Document> docs = service.searchList(phraseQuery,10);
         docs.forEach(e->{
-           System.out.println(e);
+            System.out.println(e);
         });
     }
     /**
@@ -179,7 +213,7 @@ public class SimpleExample {
         regexpQuery.getRegexp();
         List<Document> docs = service.searchList(regexpQuery,10);
         docs.forEach(e->{
-           System.out.println(e);
+            System.out.println(e);
         });
     }
 }

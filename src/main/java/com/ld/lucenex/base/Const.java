@@ -33,4 +33,7 @@ public class Const {
 
     public final static String STRING_TEXTFIELD_STR = "str";
     public final static String STRING_TEXTFIELD_TEXT = "text";
+    public final static String DEFAULT_SERVICE_KEY = "default_service_key";
+
+
 }
