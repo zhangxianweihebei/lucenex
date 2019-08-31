@@ -1,5 +1,5 @@
 # lucenex
-基于JDK 1.8 & lucene 7.x 的搜索框架、在不影响原本性能的同时、提升80%的开发效率、降低70%的开发难度！！！
+基于JDK 1.8 & lucene 8.x 的搜索框架、在不影响原本性能的同时、提升80%的开发效率、降低70%的开发难度！！！
 # 文档
 ### 简介：https://gitee.com/Myzhang/luceneplus/blob/master/README.md
 ### javadoc：https://apidoc.gitee.com/Myzhang/luceneplus
@@ -154,13 +154,8 @@ public class DemoService<T> extends ServiceImpl<T> {
 # 社区
 * QQ群号:475349334
 # 安装
-### maven
 ```
-<dependency>
-  <groupId>com.github.zhangxianweihebei</groupId>
-  <artifactId>lucenex</artifactId>
-  <version>1.1</version>
-</dependency>
+下载后使用Maven打包成jar
 ```
 # 用法
 ### 1、继承 LuceneXConfig
