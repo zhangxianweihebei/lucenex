@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BasisService<T> extends Service {
+abstract class BasisService<T> extends Service {
 
     public BasisService(String sourceKey) {
         super(sourceKey);
@@ -59,7 +59,6 @@ public class BasisService<T> extends Service {
     /**
      * 查询单个
      * @param query
-     * @param <T>
      * @return
      * @throws IOException
      */
@@ -88,23 +87,21 @@ public class BasisService<T> extends Service {
      * 根据 Query 查询集合
      * @param query
      * @param num
-     * @param <T>
      * @return List<T>
      * @throws IOException
      */
-    public <T> List<T> searchList(Query query, int num) throws IOException {
+    public List<T> searchList(Query query, int num) throws IOException {
         List<Document> documents = searchListDoc(query, num);
         Class<T> defaultClass = indexSource.getDefaultClass();
-        return CommonUtil.getObjects(documents,defaultClass);
+        return CommonUtil.getObjects(documents,defaultClass,query,indexSource);
     }
     /**
      * 根据 Query 查询集合
      * @param query
-     * @param <T>
      * @return List<T>
      * @throws IOException
      */
-    public <T> List<T> searchList(Query query) throws IOException {
+    public List<T> searchList(Query query) throws IOException {
         return searchList(query,Integer.MAX_VALUE);
     }
 
@@ -137,7 +134,7 @@ public class BasisService<T> extends Service {
      * @Description: 简单分页查询
      * @return: Page<Document>
      */
-    public <T> Page<T> searchList(Query query, Page<T> page) throws IOException {
+    public Page<T> searchList(Query query, Page<T> page) throws IOException {
         int pageSize = page.getPageSize();
         int pageNum = page.getPageNum();
         TopScoreDocCollector collector = TopScoreDocCollector.create(pageNum+pageSize,Integer.MAX_VALUE);
@@ -146,7 +143,7 @@ public class BasisService<T> extends Service {
         ScoreDoc[] scoreDocs = collector.topDocs(pageNum, pageSize).scoreDocs;
         List<Document> documentPageList = getDocuments(scoreDocs);
         Class<T> defaultClass = indexSource.getDefaultClass();
-        page.setList(CommonUtil.getObjects(documentPageList,defaultClass));
+        page.setList(CommonUtil.getObjects(documentPageList,defaultClass,query,indexSource));
         page.setTotalRow(totalHits);
         return page;
     }
@@ -194,7 +191,8 @@ public class BasisService<T> extends Service {
     List<Document> getDocuments(ScoreDoc[] scoreDocs) throws IOException {
         List<Document> documents = new ArrayList(scoreDocs.length);
         for (int i = 0, size = scoreDocs.length; i < size; i++) {
-            documents.add(getDocument(scoreDocs[i].doc));
+            Document document = getDocument(scoreDocs[i].doc);
+            documents.add(document);
         }
         return documents;
     }
@@ -205,7 +203,7 @@ public class BasisService<T> extends Service {
      * @return
      * @throws IOException
      */
-    Document getDocument(int docID) throws IOException {
+    Document  getDocument(int docID) throws IOException {
         return indexSource.getIndexSearcher().doc(docID);
     }
 

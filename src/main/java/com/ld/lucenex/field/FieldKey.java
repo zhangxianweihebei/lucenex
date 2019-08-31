@@ -1,6 +1,8 @@
 package com.ld.lucenex.field;
 
 
+import com.ld.lucenex.base.Const;
+
 import java.lang.annotation.*;
 
 /**
@@ -26,4 +28,10 @@ public @interface FieldKey {
      * @return
      */
     LDSort sort() default LDSort.SortedDocValuesField;
+
+    boolean highlight() default false;
+
+    String[] highlightTag() default {"<span>","</span>"};
+
+    int highlightNum() default 30;
 }

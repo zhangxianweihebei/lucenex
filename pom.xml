@@ -45,7 +45,6 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<lucene.version>8.2.0</lucene.version>
-		<jackson.version>2.9.5</jackson.version>
 	</properties>
 
 	<dependencies>

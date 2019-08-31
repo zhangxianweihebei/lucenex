@@ -9,7 +9,7 @@ public class Empty{
     private int id;
     @FieldKey(type = LDType.StringField)
     private String name;
-    @FieldKey(type = LDType.TextField)
+    @FieldKey(type = LDType.TextField,highlight = true)
     private String text;
 
     public int getId() {

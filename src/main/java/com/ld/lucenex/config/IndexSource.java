@@ -11,6 +11,7 @@
  */
 package com.ld.lucenex.config;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -28,9 +29,7 @@ import sun.nio.ch.FileKey;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 /**
@@ -49,6 +48,7 @@ public class IndexSource<T> {
     private Class<T> defaultClass;
     private Highlighter highlighter;
     List<Field> declaredFields;
+    private Map<String, JSONObject> highlighterField = new HashMap<>();
 
     private volatile boolean lock = false;
 
@@ -62,15 +62,13 @@ public class IndexSource<T> {
     /**
      *
      * @param indexPath
-     * @param highlight
      * @param writer
      * @param searcher
      * @param analyzer
      * @param defaultClass
      */
-    public IndexSource(String indexPath, boolean highlight, IndexWriter writer, IndexSearcher searcher, PerFieldAnalyzerWrapper analyzer, Class<T> defaultClass){
+    public IndexSource(String indexPath, IndexWriter writer, IndexSearcher searcher, PerFieldAnalyzerWrapper analyzer, Class<T> defaultClass){
         this.indexPath = indexPath;
-        this.highlight = highlight;
         this.indexWriter = writer;
         this.indexSearcher = searcher;
         this.analyzer = analyzer;
@@ -81,6 +79,14 @@ public class IndexSource<T> {
             field.setAccessible(true);
             if (field.isAnnotationPresent(FieldKey.class)){
                 fields.add(field);
+                FieldKey fieldKey = field.getAnnotation(FieldKey.class);
+                if (fieldKey.highlight()){
+                    this.highlight = true;
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("tag",fieldKey.highlightTag());
+                    jsonObject.put("num",fieldKey.highlightNum());
+                    highlighterField.put(field.getName(),jsonObject);
+                }
             }
         }
         this.declaredFields = fields;
@@ -156,5 +162,9 @@ public class IndexSource<T> {
 
     public void setLock(boolean lock) {
         this.lock = lock;
+    }
+
+    public Map<String, JSONObject> getHighlighterField() {
+        return highlighterField;
     }
 }

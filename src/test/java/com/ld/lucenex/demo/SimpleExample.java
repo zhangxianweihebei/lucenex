@@ -3,12 +3,13 @@ package com.ld.lucenex.demo;
 import com.ld.lucenex.base.BaseConfig;
 import com.ld.lucenex.config.LuceneXConfig;
 import com.ld.lucenex.core.LuceneX;
-import com.ld.lucenex.service.BasisService;
 import com.ld.lucenex.service.ServiceFactory;
+import com.ld.lucenex.service.ServiceImpl;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.IntPoint;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -55,10 +56,10 @@ public class SimpleExample {
 
     /**
      * 测试近实时
-     * 插入10万条数据，立马调用查询 并查出结果
+     * 插入100万条数据，立马调用查询 并查出结果
      */
     @Test
-    public void testNearRealTime(){
+    public void testNearRealTime() throws IOException {
         List<Empty> empties = new ArrayList<>(100000);
         for (int i =0;i<1000000;i++){
             Empty empty = new Empty();
@@ -67,30 +68,22 @@ public class SimpleExample {
             empty.setText("我是 一个 正儿八经 的 小男孩");
             empties.add(empty);
         }
-        try {
-            long time = System.currentTimeMillis();
-            ServiceFactory.getService(BasisService.class,"123").addObjects(empties);
-            System.out.println(System.currentTimeMillis()-time);
-            time = System.currentTimeMillis();
-            System.out.println(ServiceFactory.getService(BasisService.class,"123").searchTotal().size());
-            System.out.println(System.currentTimeMillis()-time);
-            ServiceFactory.getService(BasisService.class,"123").deleteAll();
-            logger.info(ServiceFactory.getService(BasisService.class,"123").searchTotal().size()+"");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ServiceFactory.getService(ServiceImpl.class,"123").addObjects(empties);
+        Assertions.assertTrue(ServiceFactory.getService(ServiceImpl.class,"123").searchTotal().size() == 1000000);
+        ServiceFactory.getService(ServiceImpl.class,"123").deleteAll();
+        Assertions.assertTrue(ServiceFactory.getService(ServiceImpl.class,"123").searchTotal().size() == 0);
     }
 
 
     @Test
     public void deleteAll() throws IOException {
-        BasisService basisService = ServiceFactory.getService(BasisService.class);
-        basisService.deleteAll();
+        ServiceImpl ServiceImpl = ServiceFactory.getService(ServiceImpl.class);
+        ServiceImpl.deleteAll();
     }
 
     @Test
     public void save() throws IOException {
-        BasisService service = ServiceFactory.getService(BasisService.class,"123");
+        ServiceImpl service = ServiceFactory.getService(ServiceImpl.class,"123");
         Empty empty = new Empty();
         empty.setId(1);
         empty.setName("张三");
@@ -100,14 +93,14 @@ public class SimpleExample {
 
     @Test
     public void searchOneDoc() throws IOException {
-        BasisService service =  ServiceFactory.getService(BasisService.class,"123");
+        ServiceImpl service =  ServiceFactory.getService(ServiceImpl.class,"123");
         Document doc = service.searchOneDoc(IntPoint.newExactQuery("id",1));
         System.out.println(doc);
     }
 
     @Test
     public void searchTotal() throws IOException {
-        BasisService service =  ServiceFactory.getService(BasisService.class,"123");
+        ServiceImpl service =  ServiceFactory.getService(ServiceImpl.class,"123");
         List<Document> doc = service.searchTotal();
         doc.forEach(e->System.out.println(e));
     }
@@ -118,7 +111,7 @@ public class SimpleExample {
      */
     @Test
     public void searchListPrefixQuery() throws IOException {
-        BasisService service =  ServiceFactory.getService(BasisService.class,"123");
+        ServiceImpl service =  ServiceFactory.getService(ServiceImpl.class,"123");
         PrefixQuery prefixQuery = new PrefixQuery(new Term("name", "张"));
         List<Document> docs = service.searchList(prefixQuery,10);
         docs.forEach(e->{
@@ -131,7 +124,7 @@ public class SimpleExample {
      */
     @Test
     public void searchListWildcardQuery() throws IOException {
-        BasisService service =  ServiceFactory.getService(BasisService.class,"123");
+        ServiceImpl service =  ServiceFactory.getService(ServiceImpl.class,"123");
         WildcardQuery wildcardQuery = new WildcardQuery(new Term("name", "?三"));
         List<Document> docs = service.searchList(wildcardQuery,10);
         docs.forEach(e->{
@@ -144,7 +137,7 @@ public class SimpleExample {
      */
     @Test
     public void searchListFuzzyQuery() throws IOException {
-        BasisService service =  ServiceFactory.getService(BasisService.class,"123");
+        ServiceImpl service =  ServiceFactory.getService(ServiceImpl.class,"123");
         FuzzyQuery fuzzyQuery = new FuzzyQuery(new Term("name", "张二"));
         List<Document> docs = service.searchList(fuzzyQuery,10);
         docs.forEach(e->{
@@ -157,7 +150,7 @@ public class SimpleExample {
      */
     @Test
     public void searchListTermQuery() throws IOException {
-        BasisService service =  ServiceFactory.getService(BasisService.class,"123");
+        ServiceImpl service =  ServiceFactory.getService(ServiceImpl.class,"123");
         TermQuery termQuery = new TermQuery(new Term("name", "张三"));
         List<Document> docs = service.searchList(termQuery,10);
         docs.forEach(e->{
@@ -174,7 +167,7 @@ public class SimpleExample {
      */
     @Test
     public void searchListBooleanQuery() throws IOException {
-        BasisService service =  ServiceFactory.getService(BasisService.class,"123");
+        ServiceImpl service =  ServiceFactory.getService(ServiceImpl.class,"123");
         TermQuery termQuery = new TermQuery(new Term("name", "张三"));
         BooleanQuery booleanQuery = new BooleanQuery.Builder()
                 .add(termQuery, BooleanClause.Occur.MUST)
@@ -191,7 +184,7 @@ public class SimpleExample {
      */
     @Test
     public void searchListPhraseQuery() throws IOException {
-        BasisService service =  ServiceFactory.getService(BasisService.class,"123");
+        ServiceImpl service =  ServiceFactory.getService(ServiceImpl.class,"123");
         PhraseQuery phraseQuery = new PhraseQuery.Builder()
                 .setSlop(1)
                 .add(new Term("text", "woshi"))
@@ -208,7 +201,7 @@ public class SimpleExample {
      */
     @Test
     public void searchListRegexpQuery() throws IOException {
-        BasisService service =  ServiceFactory.getService(BasisService.class,"123");
+        ServiceImpl service =  ServiceFactory.getService(ServiceImpl.class,"123");
         RegexpQuery regexpQuery = new RegexpQuery(new Term("name","*三"));
         regexpQuery.getRegexp();
         List<Document> docs = service.searchList(regexpQuery,10);

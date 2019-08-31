@@ -20,7 +20,7 @@ package com.ld.lucenex.base;
 public class Const {
     public final static boolean DEFAULT_DEV_MODE = true;
     public final static boolean DEFAULT_HIGHLIGHT = true;
-    public final static String[] DEFAULT_HTMLFORMATTER = new String[]{"<span>", "</span>"};
+    public static final String[] DEFAULT_HTMLFORMATTER = new String[]{"<span>", "</span>"};
     public final static int DEFAULT_HighlightNum = 30;
 
     /**

@@ -39,7 +39,7 @@ public class BaseConfig implements InitConfig {
         config.configLuceneX(baseConfig);
     }
 
-    public <T> void createSource(String indexPath, String dataKey, boolean highlight, PerFieldAnalyzerWrapper analyzer, Class<T> clazz) {
+    public <T> void createSource(String indexPath, String dataKey, PerFieldAnalyzerWrapper analyzer, Class<T> clazz) {
         if (indexPath == null || dataKey == null){
             throw new NullPointerException("There is no default disk");
         }
@@ -59,7 +59,7 @@ public class BaseConfig implements InitConfig {
         try {
             IndexWriter indexWriter = CommonUtil.createIndexWriter(file.getPath(), analyzer);
             IndexSearcher indexSearcher = CommonUtil.createIndexSearcher(indexWriter);
-            IndexSource indexSource = new IndexSource(file.getPath(),highlight,indexWriter,indexSearcher,analyzer,clazz);
+            IndexSource indexSource = new IndexSource(file.getPath(),indexWriter,indexSearcher,analyzer,clazz);
             LuceneX.addIndexSource(dataKey,indexSource);
         } catch (Exception e) {
             logger.error("BaseConfig.createSource error", e);
@@ -69,27 +69,19 @@ public class BaseConfig implements InitConfig {
     @Override
     public void add(String indexPath, String dataKey, Class<?> clas) {
         // TODO 自动生成的方法存根
-        createSource(indexPath, dataKey, false, null, clas);
+        createSource(indexPath, dataKey, null, clas);
 
     }
 
     @Override
-    public void add(String indexPath, String dataKey, boolean highlight, Class<?> clas) {
-        // TODO 自动生成的方法存根
-        createSource(indexPath, dataKey, highlight, null, clas);
-
-    }
-
-    @Override
-    public void add(String indexPath, String dataKey, boolean highlight, PerFieldAnalyzerWrapper analyzer,
+    public void add(String indexPath, String dataKey, PerFieldAnalyzerWrapper analyzer,
                     Class<?> clas) {
-        createSource(indexPath, dataKey, highlight, analyzer, clas);
+        createSource(indexPath, dataKey, analyzer, clas);
     }
 
 }
 
 interface InitConfig {
     void add(String indexPath, String dataKey, Class<?> clas);
-    void add(String indexPath, String dataKey, boolean highlight, Class<?> clas);
-    void add(String indexPath, String dataKey, boolean highlight, PerFieldAnalyzerWrapper analyzer, Class<?> clas);
+    void add(String indexPath, String dataKey, PerFieldAnalyzerWrapper analyzer, Class<?> clas);
 }
