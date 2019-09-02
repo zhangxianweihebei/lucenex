@@ -210,9 +210,4 @@ abstract class BasisService<T> extends Service {
     TopDocs search(Query query, int n) throws IOException {
         return indexSource.getIndexSearcher().search(query, n);
     }
-
-    TopFieldDocs search(Query query, int n, Sort sort) {
-        return search(query, n, sort);
-    }
-
 }

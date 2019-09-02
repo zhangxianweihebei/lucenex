@@ -1,9 +1,19 @@
 # lucenex
-基于JDK 1.8 & lucene 8.x 的搜索框架、在不影响原本性能的同时、提升80%的开发效率、降低70%的开发难度！！！
+去除lucene繁琐的操作，让你专注于实现业务!
 # 文档
 ### 简介：https://gitee.com/Myzhang/luceneplus/blob/master/README.md
 ### javadoc：https://apidoc.gitee.com/Myzhang/luceneplus
 ### Demo：https://gitee.com/Myzhang/luceneplus/tree/master/src/test/java/com/ld/lucenex/demo
+
+# 特点
+* 原生lucene用法
+* 天然支持多数据源
+* 自带数据源创建和垃圾回收
+* 默认实现近实时索引
+* MyDocument 加持 支持 map、json、obj 自动转换
+* 一键高亮支持
+* 统一的service接口思想
+* 注解式声明字段
 
 # 入门
 ### 创建lucene数据源
@@ -98,6 +108,8 @@ public class DemoService<T> extends ServiceImpl<T> {
 ### 如何与其他web/非web框架集成
 * 只要在项目启动的时候 创建lucene数据源即可
 # 更新日志
+### v2.1
+* 去除一个递归调用接口bug
 ### v2.0
 * 大量改动与之前版本不兼容
 * 新增关闭保护，jvm停止前提交所有队列里的数据，保证数据的完整性
@@ -129,28 +141,6 @@ public class DemoService<T> extends ServiceImpl<T> {
 * 使用cglib 动态代理创建 Service<br>
 * 新增拦截器<br>
 * 添加更新 默认异步
-
-# 亮点
-* 轻 ~ 不足千行
-* 简 ~ 零配置项
-* 全 ~ 内置丰富
-* 易 ~ 入门简单
-* 快 ~ 接近原生
-* 稳 ~ 坚如磐石
-* 展 ~ 插件扩展
-
-# 特点
-* 原声Lucene 用法
-* 注解式声明字段
-* 多库自动切换
-* 自带管理资源创建于释放
-* 自带高性能近实时索引
-* 可持续扩展的Service 接口设计
-* 内置丰富常用接口
-* 可直接添加Java对象与Map集合 无需手动创建 Document
-* 支持操作回退
-* 可自定义分词器
-* 异常退出数据保护
 # 社区
 * QQ群号:475349334
 # 安装
