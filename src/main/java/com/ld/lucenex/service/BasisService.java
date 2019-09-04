@@ -5,6 +5,7 @@ import com.ld.lucenex.core.MyDocument;
 import com.ld.lucenex.util.CommonUtil;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.IntPoint;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
 
 import java.io.IOException;
@@ -209,5 +210,15 @@ abstract class BasisService<T> extends Service {
 
     public TopDocs search(Query query, int n) throws IOException {
         return indexSource.getIndexSearcher().search(query, n);
+    }
+
+
+    public long updateObject(Term term, Object object) throws IOException {
+        return updateDocument(term, new MyDocument(object,indexSource.getDeclaredFields()));
+    }
+    public long updateObjects(Term term, List<?> objects) throws IOException {
+        List<Field> declaredFields = indexSource.getDeclaredFields();
+        List<MyDocument> documents = objects.stream().map(e -> new MyDocument(e, declaredFields)).collect(Collectors.toList());
+        return updateDocuments(term,documents);
     }
 }

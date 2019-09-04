@@ -61,26 +61,26 @@ public abstract class Service {
 
     /**
      * 根据 term 更新
-     * @param documents
-     * @param term
+     * @param docs
+     * @param delTerm
      * @return
      * @throws IOException
      */
-    public long updateDocuments(List<Document> documents, Term term) throws IOException {
-        long l = indexSource.getIndexWriter().updateDocuments(term, documents);
+    public long updateDocuments(Term delTerm, Iterable<? extends Iterable<? extends IndexableField>> docs) throws IOException {
+        long l = indexSource.getIndexWriter().updateDocuments(delTerm, docs);
         indexSource.updateIndexSource();
         return l;
     }
 
     /**
      * 根据 term 更新
-     * @param document
+     * @param doc
      * @param term
      * @return
      * @throws IOException
      */
-    public long updateDocument(Document document, Term term) throws IOException {
-        long l = indexSource.getIndexWriter().updateDocument(term, document);
+    public long updateDocument(Term term, Iterable<? extends IndexableField> doc) throws IOException {
+        long l = indexSource.getIndexWriter().updateDocument(term, doc);
         indexSource.updateIndexSource();
         return l;
     }
