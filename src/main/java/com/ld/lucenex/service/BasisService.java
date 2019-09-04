@@ -188,7 +188,7 @@ abstract class BasisService<T> extends Service {
      * @return
      * @throws IOException
      */
-    List<Document> getDocuments(ScoreDoc[] scoreDocs) throws IOException {
+    public List<Document> getDocuments(ScoreDoc[] scoreDocs) throws IOException {
         List<Document> documents = new ArrayList(scoreDocs.length);
         for (int i = 0, size = scoreDocs.length; i < size; i++) {
             Document document = getDocument(scoreDocs[i].doc);
@@ -203,11 +203,11 @@ abstract class BasisService<T> extends Service {
      * @return
      * @throws IOException
      */
-    Document  getDocument(int docID) throws IOException {
+    public Document  getDocument(int docID) throws IOException {
         return indexSource.getIndexSearcher().doc(docID);
     }
 
-    TopDocs search(Query query, int n) throws IOException {
+    public TopDocs search(Query query, int n) throws IOException {
         return indexSource.getIndexSearcher().search(query, n);
     }
 }
