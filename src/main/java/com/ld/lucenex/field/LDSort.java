@@ -32,6 +32,10 @@ public enum LDSort {
     /**
      * null
      */
-    SortNull
+    SortNull,
+
+    FloatDocValuesField,
+
+    DoubleDocValuesField
 
 }

@@ -95,7 +95,13 @@ public final class MyDocument implements Iterable<IndexableField> {
                             add(new NumericDocValuesField(name, Long.valueOf(jsonObject.getString(name))));
                             break;
                         case SortedNumericDocValuesField:
-                            add(new SortedNumericDocValuesField(name, Long.valueOf(jsonObject.getString(name))));
+                            add(new SortedNumericDocValuesField(name, jsonObject.getLong(name)));
+                            break;
+                        case FloatDocValuesField:
+                            add(new FloatDocValuesField(name, jsonObject.getFloat(name)));
+                            break;
+                        case DoubleDocValuesField:
+                            add(new DoubleDocValuesField(name, jsonObject.getDouble(name)));
                             break;
                         default:
                     }

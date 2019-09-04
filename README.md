@@ -108,6 +108,8 @@ public class DemoService<T> extends ServiceImpl<T> {
 ### 如何与其他web/非web框架集成
 * 只要在项目启动的时候 创建lucene数据源即可
 # 更新日志
+### v2.3
+* 新增 FloatDocValuesField 和 DoubleDocValuesField 排序
 ### v2.2
 * 更改BasisService中3个私有方法改为public
 * 去除pom.xml中的一个旧的依赖
