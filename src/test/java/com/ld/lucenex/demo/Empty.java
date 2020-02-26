@@ -1,6 +1,7 @@
 package com.ld.lucenex.demo;
 
 import com.ld.lucenex.field.FieldKey;
+import com.ld.lucenex.field.LDSort;
 import com.ld.lucenex.field.LDType;
 
 public class Empty{
@@ -9,7 +10,7 @@ public class Empty{
     private int id;
     @FieldKey(type = LDType.StringField)
     private String name;
-    @FieldKey(type = LDType.TextField,highlight = true)
+    @FieldKey(type = LDType.TextField,sort = LDSort.SortNull)
     private String text;
 
     public int getId() {
