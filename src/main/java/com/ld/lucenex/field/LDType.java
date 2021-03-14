@@ -16,5 +16,6 @@ public enum LDType {
     LongPoint,
     FloatPoint,
     DoublePoint,
-    BinaryPoint
+    BinaryPoint,
+    NULL
 }

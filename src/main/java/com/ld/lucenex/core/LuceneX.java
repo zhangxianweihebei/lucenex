@@ -1,126 +1,114 @@
 package com.ld.lucenex.core;
 
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
-import com.ld.lucenex.base.BaseConfig;
-import com.ld.lucenex.base.Const;
-import com.ld.lucenex.config.IndexSource;
-import com.ld.lucenex.config.LuceneXConfig;
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.*;
+
 import org.apache.lucene.index.IndexWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
+import com.ld.lucenex.base.Const;
+import com.ld.lucenex.config.IndexSource;
 
-public class LuceneX implements Closeable {
+import lombok.Getter;
 
-    private static Logger logger = LoggerFactory.getLogger(LuceneX.class);
+public class LuceneX{
 
-    static ListeningExecutorService executorService;
+	private static Logger logger = LoggerFactory.getLogger(LuceneX.class);
 
-    static Map<String, IndexSource> sourceMap = new HashMap<>();
-    static int cpuNum = Runtime.getRuntime().availableProcessors();
+	private static LuceneX luceneX = new LuceneX();
 
-    public LuceneX(){
-        initExecutorService(cpuNum*2);
-    }
-    public LuceneX(LuceneXConfig luceneXConfig){
-        BaseConfig.configLuceneX(luceneXConfig);
-        initExecutorService(cpuNum*2);
-    }
-    public LuceneX(LuceneXConfig luceneXConfig,int threadNum){
-        BaseConfig.configLuceneX(luceneXConfig);
-        initExecutorService(threadNum);
-    }
+	@Getter
+	ListeningExecutorService executorService;
 
-    public LuceneX(Class<?> clazz) throws IllegalAccessException, InstantiationException {
-        LuceneXConfig luceneXConfig = (LuceneXConfig)clazz.newInstance();
-        BaseConfig.configLuceneX(luceneXConfig);
-        initExecutorService(cpuNum*2);
-    }
-    public LuceneX(Class<?> clazz,int threadNum) throws IllegalAccessException, InstantiationException {
-        LuceneXConfig luceneXConfig = (LuceneXConfig)clazz.newInstance();
-        BaseConfig.configLuceneX(luceneXConfig);
-        initExecutorService(threadNum);
-    }
+	volatile Map<String, IndexSource> sourceMap;
 
-    private void initExecutorService(int numThread){
-        System.out.println("initExecutorService");
-        executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(numThread));
-        Runtime.getRuntime().addShutdownHook(new Thread(){
-            @Override
-            public void run() {
-                logger.warn("lucenex close ...");
-                try {
-                    close();
-                    logger.warn("lucenex close success");
-                } catch (IOException e) {
-                    logger.error("lucenex close error",e);
+	static final int numThread = 2;
 
-                }
-            }
-        });
-    }
+	private LuceneX() {
+		sourceMap = new ConcurrentHashMap<>(5);
+		initExecutorService(numThread);
+	}
+
+	public static LuceneX getInstance() {
+		return LuceneX.luceneX;
+	}
 
 
-    public static ListenableFuture submit(Runnable runnable){
-        return executorService.submit(runnable);
-    }
 
-    public static ListeningExecutorService getExecutorService(){
-        return executorService;
-    }
-
-    public static void addIndexSource(String key,IndexSource indexSource){
-        synchronized (sourceMap){
-            sourceMap.put(key,indexSource);
-        }
-    }
-
-    public static IndexSource getIndexSource(String key){
-        if (sourceMap.size() == 0 || key == null){
-            return null;
-        }
-        //如果key是默认值 那么 获取第一个
-        if (Const.DEFAULT_SERVICE_KEY.equals(key)){
-            String next = sourceMap.keySet().iterator().next();
-            return sourceMap.get(next);
-        }else {
-            return sourceMap.get(key);
-        }
-    }
+	private void initExecutorService(int numThread){
+		ThreadPoolExecutor executorService = (ThreadPoolExecutor)Executors.newFixedThreadPool(numThread);
+		executorService.setKeepAliveTime(3,TimeUnit.SECONDS);
+		this.executorService = MoreExecutors.listeningDecorator(executorService);
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			logger.warn("lucenex close ...");
+			close();
+		}));
+	}
 
 
-    @Override
-    public void close() throws IOException {
-        //延迟3秒关闭，防止有数据没提交进来
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        executorService.shutdown();
-        try {
-            executorService.awaitTermination(1, TimeUnit.HOURS);
-        } catch (InterruptedException e) {
-            logger.error("executorService error",e);
-        }
-        sourceMap.forEach((k,v)->{
-            IndexWriter indexWriter = v.getIndexWriter();
-            try {
-                indexWriter.flush();
-                indexWriter.commit();
-                indexWriter.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        sourceMap.clear();
-    }
+	public void addIndexSource(String key,IndexSource indexSource){
+		synchronized (sourceMap){
+			sourceMap.put(key,indexSource);
+		}
+	}
+
+	public void addIndexSource(IndexSource indexSource){
+		File file = new File(indexSource.getIndexPath());
+		addIndexSource(file.getName(), indexSource);
+	}
+
+	public IndexSource getDefaultIndexSource() {
+		return getIndexSource(Const.DEFAULT_SERVICE_KEY);
+	}
+
+	public void syncIndexSource(IndexWriter indexWriter) {
+		Set<Map.Entry<String, IndexSource>> entries = sourceMap.entrySet();
+		for (Map.Entry<String, IndexSource> nextEntry : entries){
+			IndexSource nextValue = nextEntry.getValue();
+			IndexWriter indexWriter1 = nextValue.getIndexWriter();
+			if (indexWriter1 == indexWriter){
+				nextValue.updateIndexSource();
+			}
+		}
+	}
+
+	public IndexSource getIndexSource(String key){
+		if (sourceMap.isEmpty()){
+			return null;
+		}
+		//如果key是默认值 那么 获取第一个
+		if (Const.DEFAULT_SERVICE_KEY.equals(key)){
+			String next = sourceMap.keySet().iterator().next();
+			return sourceMap.get(next);
+		}else {
+			return sourceMap.get(key);
+		}
+	}
+
+
+	public void close() {
+		sourceMap.forEach((k,v)->{
+			IndexWriter indexWriter = v.getIndexWriter();
+			try {
+				indexWriter.flush();
+				indexWriter.commit();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}finally {
+				try {
+					indexWriter.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		sourceMap.clear();
+	}
 }

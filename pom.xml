@@ -45,6 +45,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<lucene.version>8.2.0</lucene.version>
+		<lombok.version>1.18.16</lombok.version>
 	</properties>
 
 	<dependencies>
@@ -73,7 +74,12 @@
 			<artifactId>lucene-highlighter</artifactId>
 			<version>${lucene.version}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${lombok.version}</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -106,12 +112,15 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.jfinal</groupId>
-			<artifactId>jfinal</artifactId>
-			<version>3.5</version>
-			<scope>test</scope>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<version>3.3.0</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.nlpcn</groupId>
+			<artifactId>nlp-lang</artifactId>
+			<version>1.7.8</version>
+		</dependency>
 	</dependencies>
 
 
@@ -168,19 +177,19 @@
 					</execution>
 				</executions>
 			</plugin>
-<!--			<plugin>-->
-<!--				<groupId>org.apache.maven.plugins</groupId>-->
-<!--				<artifactId>maven-gpg-plugin</artifactId>-->
-<!--				<version>1.5</version>-->
-<!--				<executions>-->
-<!--					<execution>-->
-<!--						<phase>verify</phase>-->
-<!--						<goals>-->
-<!--							<goal>sign</goal>-->
-<!--						</goals>-->
-<!--					</execution>-->
-<!--				</executions>-->
-<!--			</plugin>-->
+			<!-- <plugin> -->
+			<!-- <groupId>org.apache.maven.plugins</groupId> -->
+			<!-- <artifactId>maven-gpg-plugin</artifactId> -->
+			<!-- <version>1.5</version> -->
+			<!-- <executions> -->
+			<!-- <execution> -->
+			<!-- <phase>verify</phase> -->
+			<!-- <goals> -->
+			<!-- <goal>sign</goal> -->
+			<!-- </goals> -->
+			<!-- </execution> -->
+			<!-- </executions> -->
+			<!-- </plugin> -->
 		</plugins>
 	</build>
 </project>
