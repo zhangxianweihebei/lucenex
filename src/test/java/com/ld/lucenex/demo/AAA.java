@@ -8,6 +8,8 @@ import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
 import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
+import net.sf.jsqlparser.expression.operators.relational.LikeExpression;
+import net.sf.jsqlparser.expression.operators.relational.NotEqualsTo;
 import net.sf.jsqlparser.parser.CCJSqlParserManager;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Table;
@@ -31,7 +33,7 @@ public class AAA {
         Query query;
         CCJSqlParserManager pm = new CCJSqlParserManager();
         try {
-            Statement statement = pm.parse(new StringReader("select * from user where id = 2 and name = 1 and a = 1 or b = 1"));
+            Statement statement = pm.parse(new StringReader("select * from user where id = 2 or name like '%a%' and a !=2 "));
             if (statement instanceof Select){
                 query = select((Select) statement);
             }
@@ -53,7 +55,8 @@ public class AAA {
             public void visit(PlainSelect plainSelect) {
                 Expression where = plainSelect.getWhere();
                 if (where != null) {
-                    Expression(where,builder);
+                    List<Map<BooleanClause.Occur, Expression>> expression = Expression(where);
+                    System.out.println(expression.size());
                 }
             }
         });
@@ -61,82 +64,53 @@ public class AAA {
         return null;
     }
 
-    public static void Expression(Expression expression,BooleanQuery.Builder builder){
+    public static List<Map<BooleanClause.Occur, Expression>> Expression(Expression expression){
         if (expression == null){
-            return;
+            return new ArrayList<>(0);
         }
+        List<Map<BooleanClause.Occur, Expression>> list = new ArrayList<>();
         expression.accept(new ExpressionVisitorAdapter() {
             @Override
             public void visit(EqualsTo expr) {
-                Expression leftExpression = expr.getLeftExpression();
-                String fieldName = ((Column) leftExpression).getColumnName();
-                Expression rightExpression = expr.getRightExpression();
-                rightExpression.accept(new ExpressionVisitorAdapter() {
-                    @Override
-                    public void visit(StringValue value) {
-                        Term term = new Term(fieldName, value.getValue());
-                        builder.add(new TermQuery(term), BooleanClause.Occur.MUST);
-                    }
-
-                    @Override
-                    public void visit(LongValue value) {
-                        Query query = LongPoint.newExactQuery(fieldName, value.getValue());
-                        builder.add(query, BooleanClause.Occur.MUST);
-                    }
-                });
+                findEqualsTo(expr, list);
             }
-
             @Override
             public void visit(AndExpression expr) {
-                List<Map<BooleanClause.Occur, EqualsTo>> equalsTo = findEqualsTo(expr, new ArrayList<>());
+                findEqualsTo(expr, list);
                 System.out.println();
             }
             @Override
             public void visit(OrExpression expr) {
-                List<Map<BooleanClause.Occur, EqualsTo>> equalsTo = findEqualsTo(expr, new ArrayList<>());
-                System.out.println();
+                findEqualsTo(expr, list);
             }
         });
+        return list;
     }
 
-    public static List<Map<BooleanClause.Occur,EqualsTo>> findEqualsTo(Expression expression,List<Map<BooleanClause.Occur,EqualsTo>> list){
+    public static List<Map<BooleanClause.Occur,Expression>> findEqualsTo(Expression expression,List<Map<BooleanClause.Occur,Expression>> list){
         if (expression instanceof AndExpression){
             AndExpression andExpression = (AndExpression) expression;
-            Expression leftExpression = andExpression.getLeftExpression();
-            if (leftExpression instanceof EqualsTo){
-                Map<BooleanClause.Occur, EqualsTo> map = new HashMap<>();
-                map.put(BooleanClause.Occur.MUST,(EqualsTo)leftExpression);
-                list.add(map);
-            }else {
-                findEqualsTo(leftExpression,list);
-            }
-            Expression rightExpression = andExpression.getRightExpression();
-            if (rightExpression instanceof EqualsTo){
-                Map<BooleanClause.Occur, EqualsTo> map = new HashMap<>();
-                map.put(BooleanClause.Occur.MUST,(EqualsTo)rightExpression);
-                list.add(map);
-            }else {
-                findEqualsTo(rightExpression,list);
-            }
+            findEqualsTo(andExpression.getLeftExpression(),list,BooleanClause.Occur.MUST);
+            findEqualsTo(andExpression.getRightExpression(),list,BooleanClause.Occur.MUST);
         }else if (expression instanceof OrExpression){
             OrExpression orExpression = (OrExpression) expression;
-            Expression leftExpression = orExpression.getLeftExpression();
-            if (leftExpression instanceof EqualsTo){
-                Map<BooleanClause.Occur, EqualsTo> map = new HashMap<>();
-                map.put(BooleanClause.Occur.SHOULD,(EqualsTo)leftExpression);
-                list.add(map);
-            }else {
-                findEqualsTo(leftExpression,list);
-            }
-            Expression rightExpression = orExpression.getRightExpression();
-            if (rightExpression instanceof EqualsTo){
-                Map<BooleanClause.Occur, EqualsTo> map = new HashMap<>();
-                map.put(BooleanClause.Occur.SHOULD,(EqualsTo)rightExpression);
-                list.add(map);
-            }else {
-                findEqualsTo(rightExpression,list);
-            }
+            findEqualsTo(orExpression.getLeftExpression(),list,BooleanClause.Occur.SHOULD);
+            findEqualsTo(orExpression.getRightExpression(),list,BooleanClause.Occur.SHOULD);
+        }else if (expression instanceof EqualsTo){
+            findEqualsTo(expression, list,BooleanClause.Occur.MUST);
+        }else if (expression instanceof NotEqualsTo){
+            findEqualsTo(expression, list,BooleanClause.Occur.MUST_NOT);
         }
         return list;
+    }
+
+    public static void findEqualsTo(Expression expression,List<Map<BooleanClause.Occur,Expression>> list,BooleanClause.Occur qccur){
+        if (expression instanceof EqualsTo || expression instanceof LikeExpression || expression instanceof NotEqualsTo){
+            Map<BooleanClause.Occur, Expression> map = new HashMap<>();
+            map.put(qccur,expression);
+            list.add(map);
+        }else {
+            findEqualsTo(expression,list);
+        }
     }
 }

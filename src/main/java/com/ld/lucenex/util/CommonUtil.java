@@ -12,8 +12,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.highlight.Highlighter;
-import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
 import org.apache.lucene.store.*;
 
 import java.io.File;
@@ -37,56 +35,56 @@ public class CommonUtil {
     public static <T> List<T> getObjects(List<Document> documents, Class<T> clazz){
         return documents.stream().map(e->getObject(e,clazz)).collect(Collectors.toList());
     }
-    public static <T> T getObject(Document document, Class<T> clazz, Query query, IndexSource indexSource,Map<String,Highlighter> highlighterMap){
-        JSONObject jsonObject = new JSONObject();
-        if (highlighterMap == null){
-            document.forEach(e->{
-                String name = e.name();
-                String value = e.stringValue();
-                jsonObject.put(name,value);
-            });
-        }else {
-            document.forEach(e->{
-                String name = e.name();
-                String value = e.stringValue();
-                Highlighter highlighter = highlighterMap.get(name);
-                if (highlighter == null){
-                    jsonObject.put(name,value);
-                }else {
-                    try {
-                        String bestFragment = highlighter.getBestFragment(indexSource.getPerFieldAnalyzerWrapper(), name, value);
-                        jsonObject.put(name,bestFragment);
-                    } catch (IOException | InvalidTokenOffsetsException ex) {
-                        jsonObject.put(name,value);
-                        ex.printStackTrace();
-                    }
-                }
-            });
-        }
-        T t = jsonObject.toJavaObject(clazz);
-        return t;
-    }
-    public static <T> List<T> getObjects(List<Document> documents, Class<T> clazz, Query query, IndexSource indexSource){
-//        if (indexSource.isHighlight()){
-//            Map<String, JSONObject> highlighterField = indexSource.getHighlighterField();
-//            Map<String,Highlighter> highlighterMap = new HashMap<>();
-//            QueryScorer scorer = new QueryScorer(query);
-//            highlighterField.forEach((k,v)->{
-//                JSONArray tag = v.getJSONArray("tag");
-//                int num = v.getIntValue("num");
-//                Formatter formatter = new SimpleHTMLFormatter(tag.getString(0),tag.getString(1));
-//                Fragmenter fragmenter = new SimpleSpanFragmenter(scorer, num);
-//                Highlighter highlighter = new Highlighter(formatter,scorer);
-//                highlighter.setTextFragmenter(fragmenter);
-//                highlighterMap.put(k,highlighter);
-//            });
-//
-//            return documents.stream().map(e->getObject(e,clazz,query,indexSource, highlighterMap)).collect(Collectors.toList());
-//        }else {
-//            return documents.stream().map(e->getObject(e,clazz,query,indexSource, null)).collect(Collectors.toList());
-//        }
-    	return documents.stream().map(e->getObject(e,clazz,query,indexSource, null)).collect(Collectors.toList());
-    }
+//    public static <T> T getObject(Document document, Class<T> clazz, Query query, IndexSource indexSource,Map<String,Highlighter> highlighterMap){
+////        JSONObject jsonObject = new JSONObject();
+////        if (highlighterMap == null){
+////            document.forEach(e->{
+////                String name = e.name();
+////                String value = e.stringValue();
+////                jsonObject.put(name,value);
+////            });
+////        }else {
+////            document.forEach(e->{
+////                String name = e.name();
+////                String value = e.stringValue();
+////                Highlighter highlighter = highlighterMap.get(name);
+////                if (highlighter == null){
+////                    jsonObject.put(name,value);
+////                }else {
+////                    try {
+////                        String bestFragment = highlighter.getBestFragment(indexSource.getPerFieldAnalyzerWrapper(), name, value);
+////                        jsonObject.put(name,bestFragment);
+////                    } catch (IOException | InvalidTokenOffsetsException ex) {
+////                        jsonObject.put(name,value);
+////                        ex.printStackTrace();
+////                    }
+////                }
+////            });
+////        }
+////        T t = jsonObject.toJavaObject(clazz);
+////        return t;
+//    }
+//    public static <T> List<T> getObjects(List<Document> documents, Class<T> clazz, Query query, IndexSource indexSource){
+////        if (indexSource.isHighlight()){
+////            Map<String, JSONObject> highlighterField = indexSource.getHighlighterField();
+////            Map<String,Highlighter> highlighterMap = new HashMap<>();
+////            QueryScorer scorer = new QueryScorer(query);
+////            highlighterField.forEach((k,v)->{
+////                JSONArray tag = v.getJSONArray("tag");
+////                int num = v.getIntValue("num");
+////                Formatter formatter = new SimpleHTMLFormatter(tag.getString(0),tag.getString(1));
+////                Fragmenter fragmenter = new SimpleSpanFragmenter(scorer, num);
+////                Highlighter highlighter = new Highlighter(formatter,scorer);
+////                highlighter.setTextFragmenter(fragmenter);
+////                highlighterMap.put(k,highlighter);
+////            });
+////
+////            return documents.stream().map(e->getObject(e,clazz,query,indexSource, highlighterMap)).collect(Collectors.toList());
+////        }else {
+////            return documents.stream().map(e->getObject(e,clazz,query,indexSource, null)).collect(Collectors.toList());
+////        }
+//    	return documents.stream().map(e->getObject(e,clazz,query,indexSource, null)).collect(Collectors.toList());
+//    }
 
     /**
      * 创建写入索引

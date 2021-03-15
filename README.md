@@ -4,6 +4,7 @@
 ### 简介：https://gitee.com/Myzhang/luceneplus/blob/master/README.md
 ### javadoc：https://apidoc.gitee.com/Myzhang/luceneplus
 ### Demo：https://gitee.com/Myzhang/luceneplus/tree/master/src/test/java/com/ld/lucenex/demo
+https://www.w3school.com.cn/sql/sql_select.asp
 
 # 特点
 * 原生lucene用法
