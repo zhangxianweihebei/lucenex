@@ -1,8 +1,6 @@
 package com.ld.lucenex.field;
 
 
-import com.ld.lucenex.base.Const;
-
 import java.lang.annotation.*;
 
 /**

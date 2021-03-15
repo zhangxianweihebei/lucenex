@@ -35,7 +35,7 @@ import java.util.List;
 public class Service{
 
 
-	public IndexSource indexSource;
+	public final IndexSource indexSource;
 
 	public IndexWriter getIndexWriter(){
 		if (indexSource == null) return null;

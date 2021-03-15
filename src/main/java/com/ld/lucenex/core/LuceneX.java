@@ -1,39 +1,40 @@
 package com.ld.lucenex.core;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.*;
-
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
+import com.ld.lucenex.config.IndexSource;
+import lombok.Getter;
 import org.apache.lucene.index.IndexWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
-import com.ld.lucenex.base.Const;
-import com.ld.lucenex.config.IndexSource;
-
-import lombok.Getter;
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class LuceneX{
 
-	private static Logger logger = LoggerFactory.getLogger(LuceneX.class);
+	private static final Logger logger = LoggerFactory.getLogger(LuceneX.class);
 
-	private static LuceneX luceneX = new LuceneX();
+	private static final LuceneX luceneX = new LuceneX();
+
+	private static final String DEFAULT_SERVICE_KEY = "DEFAULT_SERVICE_KEY";
 
 	@Getter
 	ListeningExecutorService executorService;
 
-	volatile Map<String, IndexSource> sourceMap;
+	final Map<String, IndexSource> sourceMap;
 
 	static final int numThread = 2;
 
 	private LuceneX() {
 		sourceMap = new ConcurrentHashMap<>(5);
-		initExecutorService(numThread);
+		initExecutorService();
 	}
 
 	public static LuceneX getInstance() {
@@ -42,8 +43,8 @@ public class LuceneX{
 
 
 
-	private void initExecutorService(int numThread){
-		ThreadPoolExecutor executorService = (ThreadPoolExecutor)Executors.newFixedThreadPool(numThread);
+	private void initExecutorService(){
+		ThreadPoolExecutor executorService = (ThreadPoolExecutor)Executors.newFixedThreadPool(LuceneX.numThread);
 		executorService.setKeepAliveTime(3,TimeUnit.SECONDS);
 		this.executorService = MoreExecutors.listeningDecorator(executorService);
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -65,7 +66,7 @@ public class LuceneX{
 	}
 
 	public IndexSource getDefaultIndexSource() {
-		return getIndexSource(Const.DEFAULT_SERVICE_KEY);
+		return getIndexSource(DEFAULT_SERVICE_KEY);
 	}
 
 	public void syncIndexSource(IndexWriter indexWriter) {
@@ -74,8 +75,9 @@ public class LuceneX{
 			IndexSource nextValue = nextEntry.getValue();
 			IndexWriter indexWriter1 = nextValue.getIndexWriter();
 			if (indexWriter1 == indexWriter){
-				nextValue.updateIndexSource();
-			}
+                nextValue.updateIndexSource();
+                break;
+            }
 		}
 	}
 
@@ -84,7 +86,7 @@ public class LuceneX{
 			return null;
 		}
 		//如果key是默认值 那么 获取第一个
-		if (Const.DEFAULT_SERVICE_KEY.equals(key)){
+		if (DEFAULT_SERVICE_KEY.equals(key)){
 			String next = sourceMap.keySet().iterator().next();
 			return sourceMap.get(next);
 		}else {

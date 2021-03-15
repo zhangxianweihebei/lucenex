@@ -1,11 +1,10 @@
 package com.ld.lucenex.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.alibaba.fastjson.JSONObject;
+import com.ld.lucenex.config.IndexSource;
+import com.ld.lucenex.core.LuceneX;
+import com.ld.lucenex.interceptor.IndexWriterInterceptor;
+import net.sf.cglib.proxy.Enhancer;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -17,13 +16,11 @@ import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
 import org.apache.lucene.store.*;
 
-import com.alibaba.fastjson.JSONObject;
-import com.ld.lucenex.base.Const;
-import com.ld.lucenex.config.IndexSource;
-import com.ld.lucenex.core.LuceneX;
-import com.ld.lucenex.interceptor.IndexWriterInterceptor;
-
-import net.sf.cglib.proxy.Enhancer;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CommonUtil {
 
@@ -93,39 +90,34 @@ public class CommonUtil {
 
     /**
      * 创建写入索引
+     *
      * @param indexPath
      * @param analyzer
      * @return
      * @throws IOException
      */
-    public static IndexWriter createIndexWriter(String indexPath, Analyzer analyzer) throws IOException {
-        FSDirectory fsDirectory = null;
-        switch (Const.FSD_TYPE){
-            case "nio":
-                fsDirectory = NIOFSDirectory.open(new File(indexPath).toPath(), NoLockFactory.INSTANCE);
-                break;
-            case "simp":
-                fsDirectory = SimpleFSDirectory.open(new File(indexPath).toPath(), NoLockFactory.INSTANCE);
-                break;
-            case "mmap":
-                fsDirectory = MMapDirectory.open(new File(indexPath).toPath(), NoLockFactory.INSTANCE);
-                break;
-            default:
-                String systemName = System.getProperty("os.name").toLowerCase();
-                if (systemName.indexOf("win") != -1){//win
-                    fsDirectory = SimpleFSDirectory.open(new File(indexPath).toPath(), NoLockFactory.INSTANCE);
-                }else {
-                    fsDirectory = NIOFSDirectory.open(new File(indexPath).toPath(), NoLockFactory.INSTANCE);
-                }
-                break;
+    public static IndexWriter createIndexWriter(String indexPath, Analyzer analyzer, String fsdType) throws IOException {
+        FSDirectory fsDirectory;
+        if ("nio".equals(fsdType)) {
+            fsDirectory = NIOFSDirectory.open(new File(indexPath).toPath(), NoLockFactory.INSTANCE);
+        } else if ("simp".equals(fsdType)) {
+            fsDirectory = SimpleFSDirectory.open(new File(indexPath).toPath(), NoLockFactory.INSTANCE);
+        } else if ("mmap".equals(fsdType)) {
+            fsDirectory = MMapDirectory.open(new File(indexPath).toPath(), NoLockFactory.INSTANCE);
+        } else {
+            if (System.getProperty("os.name").toLowerCase().contains("win")) {
+                return createIndexWriter(indexPath, analyzer, "simp");
+            } else {
+                return createIndexWriter(indexPath, analyzer, "nio");
+            }
         }
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
         indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-        
+
         Enhancer e = new Enhancer();
-		e.setSuperclass(IndexWriter.class);
-		e.setCallback(new IndexWriterInterceptor());
-		IndexWriter indexWriter = (IndexWriter)e.create(new Class[] {Directory.class,IndexWriterConfig.class}, new Object[] {fsDirectory, indexWriterConfig});
+        e.setSuperclass(IndexWriter.class);
+        e.setCallback(new IndexWriterInterceptor());
+        IndexWriter indexWriter = (IndexWriter) e.create(new Class[]{Directory.class, IndexWriterConfig.class}, new Object[]{fsDirectory, indexWriterConfig});
 //        IndexWriter indexWriter = new IndexWriter(fsDirectory, indexWriterConfig);
         return indexWriter;
     }

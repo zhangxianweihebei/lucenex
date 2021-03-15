@@ -44,11 +44,12 @@
 	</parent>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<lucene.version>8.2.0</lucene.version>
+		<lucene.version>8.8.1</lucene.version>
 		<lombok.version>1.18.16</lombok.version>
 	</properties>
 
 	<dependencies>
+		<!--lucene 基础包-->
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-core</artifactId>
@@ -64,16 +65,23 @@
 			<artifactId>lucene-analyzers-common</artifactId>
 			<version>${lucene.version}</version>
 		</dependency>
+
+		<!--		动态代理-->
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<version>3.3.0</version>
+		</dependency>
+
+		<!-- 测试阶段 -->
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-queries</artifactId>
+			<artifactId>lucene-demo</artifactId>
 			<version>${lucene.version}</version>
+			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-highlighter</artifactId>
-			<version>${lucene.version}</version>
-		</dependency>
+
+
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -111,11 +119,7 @@
 			<version>5.5.0-M1</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>cglib</groupId>
-			<artifactId>cglib</artifactId>
-			<version>3.3.0</version>
-		</dependency>
+
 		<dependency>
 			<groupId>org.nlpcn</groupId>
 			<artifactId>nlp-lang</artifactId>

@@ -17,13 +17,16 @@
 package com.ld.lucenex.core;
 
 
-import java.util.*;
-
-import org.apache.lucene.index.IndexReader;  // for javadoc
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexableField;
-import org.apache.lucene.search.IndexSearcher;  // for javadoc
-import org.apache.lucene.search.ScoreDoc; // for javadoc
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.util.BytesRef;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /** Documents are the unit of indexing and search.
  *
@@ -95,13 +98,7 @@ public class LdDocument implements Iterable<IndexableField> {
      * document has to be added.</p>
      */
     public final void removeFields(String name) {
-        Iterator<IndexableField> it = fields.iterator();
-        while (it.hasNext()) {
-            IndexableField field = it.next();
-            if (field.name().equals(name)) {
-                it.remove();
-            }
-        }
+        fields.removeIf(field -> field.name().equals(name));
     }
 
 
@@ -125,7 +122,7 @@ public class LdDocument implements Iterable<IndexableField> {
             }
         }
 
-        return result.toArray(new BytesRef[result.size()]);
+        return result.toArray(new BytesRef[0]);
     }
 
     /**
@@ -178,7 +175,7 @@ public class LdDocument implements Iterable<IndexableField> {
             }
         }
 
-        return result.toArray(new IndexableField[result.size()]);
+        return result.toArray(new IndexableField[0]);
     }
 
     /** Returns a List of all the fields in a document.
@@ -216,7 +213,7 @@ public class LdDocument implements Iterable<IndexableField> {
             return NO_STRINGS;
         }
 
-        return result.toArray(new String[result.size()]);
+        return result.toArray(new String[0]);
     }
 
     /** Returns the string value of the field with the given name if any exist in

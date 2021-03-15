@@ -49,11 +49,11 @@ public class ObjectToDocument extends LdDocument{
             }else if (ldType == LDType.IntPoint){
                 this.add(new IntPoint(name,Integer.parseInt(o.toString())));
             }else if (ldType == LDType.LongPoint){
-                this.add(new LongPoint(name, Long.valueOf(o.toString())));
+                this.add(new LongPoint(name, Long.parseLong(o.toString())));
             }else if (ldType == LDType.FloatPoint){
-                this.add(new FloatPoint(name, Float.valueOf(o.toString())));
+                this.add(new FloatPoint(name, Float.parseFloat(o.toString())));
             }else if (ldType == LDType.DoublePoint){
-                this.add(new DoublePoint(name, Double.valueOf(o.toString())));
+                this.add(new DoublePoint(name, Double.parseDouble(o.toString())));
             }else if (ldType == LDType.BinaryPoint){
                 byte[] bytes = (byte[])o;
                 this.add(new BinaryPoint(name,bytes));
